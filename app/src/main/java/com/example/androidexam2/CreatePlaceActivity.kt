@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Switch
 import android.widget.Toast
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,6 +27,11 @@ class CreatePlaceActivity : AppCompatActivity() {
         findViewById<Button>(R.id.savePlaceButton).setOnClickListener {
             savePlace()
         }
+
+        findViewById<FloatingActionButton>(R.id.backCreatPlaceFloatingActionButton).setOnClickListener {
+            finish()
+        }
+
     }
 
 
