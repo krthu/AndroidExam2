@@ -1,15 +1,20 @@
 package com.example.androidexam2
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Firebase
+import com.google.firebase.storage.FirebaseStorage
 
 class PlaceRecyclerAdapter(context: Context, val places: MutableList<Place>): RecyclerView.Adapter<PlaceRecyclerAdapter.ItemViewHolder>() {
     inner class ItemViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val placeNameTextView = itemView.findViewById<TextView>(R.id.placeNameTextView)
+        val rowPlaceImageView = itemView.findViewById<ImageView>(R.id.rowPlaceImageView)
     }
 
     val inflater = LayoutInflater.from(context)
@@ -27,6 +32,16 @@ class PlaceRecyclerAdapter(context: Context, val places: MutableList<Place>): Re
         val place = places[position]
 
         holder.placeNameTextView.text = place.name
+        val storageRef = place.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
+        val ONE_MEGABYTE: Long = 1024 * 1024
+        storageRef?.getBytes(ONE_MEGABYTE)
+            ?.addOnSuccessListener {bytes ->
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                holder.rowPlaceImageView.setImageBitmap(bitmap)
+            }
+
+
+
     }
 
 

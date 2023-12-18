@@ -23,7 +23,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 
 import java.util.UUID
@@ -35,6 +36,7 @@ class CreatePlaceActivity : AppCompatActivity() {
     lateinit var placeImageView: ImageView
     val PERMISSION_REQUESTCODE = 1
     private lateinit var pickImage: ActivityResultLauncher<String>
+    var imageURI: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +55,7 @@ class CreatePlaceActivity : AppCompatActivity() {
 
         }
         findViewById<Button>(R.id.savePlaceButton).setOnClickListener {
-            savePlace()
+            saveImageToStorage()
         }
 
         findViewById<FloatingActionButton>(R.id.backCreatPlaceFloatingActionButton).setOnClickListener {
@@ -108,9 +110,9 @@ class CreatePlaceActivity : AppCompatActivity() {
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             super.onActivityResult(requestCode, resultCode, data)
             if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
-                val imageURI = data.data
-
+                imageURI = data.data
                 placeImageView.setImageURI(imageURI)
+
             }
 //                val imageUri = data.data // URI för den valda bilden
 //                val storageRef = FirebaseStorage.getInstance().getReference("images/${UUID.randomUUID()}")
@@ -126,7 +128,10 @@ class CreatePlaceActivity : AppCompatActivity() {
 
 
 
-    private fun savePlace(){
+    private fun savePlace(storageRef: StorageReference){
+//        if (imageURI != null){
+//            saveImageToStorage()
+//        }
         val name = placeNameEditText.text.toString()
         val description = descriptionEditText.text.toString()
         val published = publishedSwitch.isChecked
@@ -137,11 +142,25 @@ class CreatePlaceActivity : AppCompatActivity() {
             return
         }
         val auth = Firebase.auth
-        val place = Place(name = name, description = description, published = published, creator = auth.currentUser?.uid)
+        val place = Place(name = name, description = description, published = published, creator = auth.currentUser?.uid, imageURI = storageRef.toString() )
 
         val db = FirebaseFirestore.getInstance()
         db.collection("places").add(place).addOnSuccessListener {
             finish()
         }
     }
+
+    private fun saveImageToStorage(){
+        if(imageURI != null){
+            val storageRef = FirebaseStorage.getInstance().getReference("images/${UUID.randomUUID()}")
+            imageURI?.let { storageRef.putFile(it) }
+                ?.addOnSuccessListener {
+                savePlace(storageRef)
+            }
+        }else{
+            Toast.makeText(this, "Please select a image", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
 }
