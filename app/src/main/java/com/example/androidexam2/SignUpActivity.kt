@@ -26,10 +26,11 @@ class SignUpActivity : AppCompatActivity() {
         findViewById<Button>(R.id.signUpButton).setOnClickListener{
             signUp()
         }
+        findViewById<Button>(R.id.signInButton).setOnClickListener{
+            signIn()
+        }
 
         auth = Firebase.auth
-
-
 
     }
 
@@ -67,10 +68,39 @@ class SignUpActivity : AppCompatActivity() {
                     val user = User(userId = auth.currentUser?.uid, userName = userName)
                     val db = FirebaseFirestore.getInstance()
                     db.collection("users").add(user)
+                    finish()
                 } else {
                     Log.d("!!!", "User not created ${signup.exception}")
                 }
             }
+        }
+    }
+
+    fun signIn(){
+        val email = emailEditText.text.toString()
+
+        val password = passwordEditText.text.toString()
+        if (email.isEmpty() || password.isEmpty()) {
+
+            when {
+                email.isEmpty() -> {
+                    Toast.makeText(this, R.string.emailEmpty, Toast.LENGTH_LONG).show()
+                    return
+                }
+
+                password.isEmpty() -> {
+                    Toast.makeText(this, R.string.passwordEmpty, Toast.LENGTH_LONG).show()
+                    return
+                }
+            }
+        }
+        else {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener() { signIn ->
+                    if (signIn.isSuccessful){
+                        finish()
+                    }
+                 }
         }
     }
 }
