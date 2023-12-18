@@ -16,13 +16,17 @@ class PlaceRecyclerAdapter(context: Context, val places: MutableList<Place>): Re
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        TODO("Not yet implemented")
+        var itemView = inflater.inflate(R.layout.place_row_item, parent, false)
+        var viewHolder = ItemViewHolder(itemView)
+        return viewHolder
     }
 
     override fun getItemCount() = places.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        TODO("Not yet implemented")
+        val place = places[position]
+
+        holder.placeNameTextView.text = place.name
     }
 
 
