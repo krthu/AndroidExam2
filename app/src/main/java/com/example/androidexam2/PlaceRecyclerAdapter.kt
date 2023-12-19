@@ -1,12 +1,15 @@
 package com.example.androidexam2
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
@@ -30,13 +33,19 @@ class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>)
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val place = places[position]
+        var setUri: Uri? = null
 
         holder.placeNameTextView.text = place.name
+        holder.itemView.setOnClickListener{
+            //showDetailsDialogFragment(place, setUri)
+            goToDetailsActivity(place, setUri)
+        }
 
         val storageRef = place.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
         Log.d("!!!", storageRef.toString())
         storageRef?.downloadUrl?.addOnSuccessListener { uri ->
             //holder.rowPlaceImageView.layout(0,0,0,0)
+            setUri = uri
             Glide.with(context)
                 .load(uri)
                 .centerCrop()
@@ -44,6 +53,21 @@ class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>)
                 .override(200, 200)
                 .into(holder.rowPlaceImageView)
         }
+
+
+    }
+
+    private fun showDetailsDialogFragment(place: Place, setUri: Uri?) {
+        val fragmentManager = (context as FragmentActivity).supportFragmentManager
+        val dialogFragment = DetailsDialogFragment(place, setUri)
+        dialogFragment.show(fragmentManager, "DetailsFragment")
+    }
+
+    private fun goToDetailsActivity(place: Place, setUri: Uri?){
+        val intent = Intent(context, DetailsActivity::class.java)
+        intent.putExtra("item_key", place)
+        intent.data = setUri
+        context.startActivity(intent)
 
     }
 
