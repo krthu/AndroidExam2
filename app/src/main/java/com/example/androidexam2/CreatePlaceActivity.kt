@@ -45,15 +45,18 @@ class CreatePlaceActivity : AppCompatActivity() {
         placeNameEditText = findViewById(R.id.placeNameEditText)
         descriptionEditText = findViewById(R.id.descriptionEditText)
         placeImageView = findViewById(R.id.placeImageView)
-        pickImage = registerForActivityResult(ActivityResultContracts.RequestPermission()) {isGranted ->
-            if (isGranted){
-                //Behörighet finns
-                Log.d("!!!", isGranted.toString())
-            } else {
+        pickImage =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    val intent = Intent(Intent.ACTION_PICK)
+                    intent.type = "image/*"
+                    startActivityForResult(intent, PERMISSION_REQUESTCODE)
+                    Log.d("!!!", isGranted.toString())
+                } else {
+
+                }
 
             }
-
-        }
         findViewById<Button>(R.id.savePlaceButton).setOnClickListener {
             saveImageToStorage()
         }
@@ -70,65 +73,56 @@ class CreatePlaceActivity : AppCompatActivity() {
 
     private fun getImage() {
 
-        }
+    }
 
 
-    fun checkAndRequestPermission(){
+    fun checkAndRequestPermission() {
         Log.d("!!!", "Inside checkPermission")
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             Log.d("!!!", "Inside Dont have permission")
 
             pickImage.launch(Manifest.permission.READ_MEDIA_IMAGES)
             Log.d("!!!", "After permission")
-        }else{
+        } else {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             startActivityForResult(intent, PERMISSION_REQUESTCODE)
             Log.d("!!!", "We have permission")
-           // pickImage.launch("image/*")
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUESTCODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-               // pickImage.launch("image/*")
-                val intent = Intent(Intent.ACTION_PICK)
-                intent.type = "image/*"
-                startActivityForResult(intent, PERMISSION_REQUESTCODE)
-            } else{
-                //Denied
-            }
-        }
-    }
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            super.onActivityResult(requestCode, resultCode, data)
-            if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
-                imageURI = data.data
-                placeImageView.setImageURI(imageURI)
-
-            }
-//                val imageUri = data.data // URI för den valda bilden
-//                val storageRef = FirebaseStorage.getInstance().getReference("images/${UUID.randomUUID()}")
-//                storageRef.putFile(imageUri!!)
-//                    .addOnSuccessListener {
-//                        // Hantera framgångsrik uppladdning
-//                    }
-//                    .addOnFailureListener {
-//                        // Hantera misslyckad uppladdning
-//                    }
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        if (requestCode == PERMISSION_REQUESTCODE) {
+//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // pickImage.launch("image/*")
+//                val intent = Intent(Intent.ACTION_PICK)
+//                intent.type = "image/*"
+//                startActivityForResult(intent, PERMISSION_REQUESTCODE)
+//            } else {
+//                //Denied
 //            }
+//        }
+//    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
+            imageURI = data.data
+            placeImageView.setImageURI(imageURI)
+
         }
+    }
 
-
-
-    private fun savePlace(storageRef: StorageReference){
+    private fun savePlace(storageRef: StorageReference) {
 //        if (imageURI != null){
 //            saveImageToStorage()
 //        }
@@ -136,13 +130,19 @@ class CreatePlaceActivity : AppCompatActivity() {
         val description = descriptionEditText.text.toString()
         val published = publishedSwitch.isChecked
         Log.d("!!!", "Inside SavePlace")
-        if (name.isEmpty() || description.isEmpty()){
+        if (name.isEmpty() || description.isEmpty()) {
             Log.d("!!!", "Inside failed Toast ")
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
         val auth = Firebase.auth
-        val place = Place(name = name, description = description, published = published, creator = auth.currentUser?.uid, imageURI = storageRef.toString() )
+        val place = Place(
+            name = name,
+            description = description,
+            published = published,
+            creator = auth.currentUser?.uid,
+            imageURI = storageRef.toString()
+        )
 
         val db = FirebaseFirestore.getInstance()
         db.collection("places").add(place).addOnSuccessListener {
@@ -150,14 +150,15 @@ class CreatePlaceActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveImageToStorage(){
-        if(imageURI != null){
-            val storageRef = FirebaseStorage.getInstance().getReference("images/${UUID.randomUUID()}")
+    private fun saveImageToStorage() {
+        if (imageURI != null) {
+            val storageRef =
+                FirebaseStorage.getInstance().getReference("images/${UUID.randomUUID()}")
             imageURI?.let { storageRef.putFile(it) }
                 ?.addOnSuccessListener {
-                savePlace(storageRef)
-            }
-        }else{
+                    savePlace(storageRef)
+                }
+        } else {
             Toast.makeText(this, "Please select a image", Toast.LENGTH_SHORT).show()
         }
 

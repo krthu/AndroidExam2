@@ -1,7 +1,6 @@
 package com.example.androidexam2
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.firebase.Firebase
 import com.google.firebase.storage.FirebaseStorage
 
 class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>): RecyclerView.Adapter<PlaceRecyclerAdapter.ItemViewHolder>() {
@@ -41,14 +39,6 @@ class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>)
                 .load(uri)
                 .into(holder.rowPlaceImageView)
         }
-//        val ONE_MEGABYTE: Long = 1024 * 1024
-//        storageRef?.getBytes(ONE_MEGABYTE)
-//            ?.addOnSuccessListener {bytes ->
-//                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-//                holder.rowPlaceImageView.setImageBitmap(bitmap)
-//            }
-
-
 
     }
 
