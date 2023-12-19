@@ -1,9 +1,12 @@
 package com.example.androidexam2
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.core.content.ContextCompat
+import androidx.core.content.PackageManagerCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,12 +17,17 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+import android.Manifest
+import android.widget.GridLayout
+import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.GridLayoutManager
 
 class MainActivity : AppCompatActivity() {
     //lateinit var createPlaceButton: Button
     lateinit var createPlaceFloatingActionButton: FloatingActionButton
     lateinit var auth: FirebaseAuth
     val places = mutableListOf<Place>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,7 +38,8 @@ class MainActivity : AppCompatActivity() {
         }
         val adapter = PlaceRecyclerAdapter(this, places)
         val recycler = findViewById<RecyclerView>(R.id.placeRecyclerView)
-        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.setHasFixedSize(true)
+        recycler.layoutManager = GridLayoutManager(this, 2)
         recycler.adapter = adapter
 
 
@@ -71,4 +80,6 @@ class MainActivity : AppCompatActivity() {
             createPlaceFloatingActionButton.isVisible = true
         }
     }
+
+
 }
