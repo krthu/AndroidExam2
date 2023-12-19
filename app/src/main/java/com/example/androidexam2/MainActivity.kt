@@ -18,7 +18,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import android.Manifest
+import android.widget.GridLayout
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.GridLayoutManager
 
 class MainActivity : AppCompatActivity() {
     //lateinit var createPlaceButton: Button
@@ -36,7 +38,8 @@ class MainActivity : AppCompatActivity() {
         }
         val adapter = PlaceRecyclerAdapter(this, places)
         val recycler = findViewById<RecyclerView>(R.id.placeRecyclerView)
-        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.setHasFixedSize(true)
+        recycler.layoutManager = GridLayoutManager(this, 2)
         recycler.adapter = adapter
 
 

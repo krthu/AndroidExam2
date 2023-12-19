@@ -3,6 +3,8 @@ package com.example.androidexam2
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -48,9 +50,7 @@ class CreatePlaceActivity : AppCompatActivity() {
         pickImage =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
-                    val intent = Intent(Intent.ACTION_PICK)
-                    intent.type = "image/*"
-                    startActivityForResult(intent, PERMISSION_REQUESTCODE)
+                    startGallery()
                     Log.d("!!!", isGranted.toString())
                 } else {
 
@@ -71,8 +71,10 @@ class CreatePlaceActivity : AppCompatActivity() {
 
     }
 
-    private fun getImage() {
-
+    private fun startGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, PERMISSION_REQUESTCODE)
     }
 
 
@@ -88,30 +90,11 @@ class CreatePlaceActivity : AppCompatActivity() {
             pickImage.launch(Manifest.permission.READ_MEDIA_IMAGES)
             Log.d("!!!", "After permission")
         } else {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            startActivityForResult(intent, PERMISSION_REQUESTCODE)
+            startGallery()
             Log.d("!!!", "We have permission")
         }
     }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        if (requestCode == PERMISSION_REQUESTCODE) {
-//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // pickImage.launch("image/*")
-//                val intent = Intent(Intent.ACTION_PICK)
-//                intent.type = "image/*"
-//                startActivityForResult(intent, PERMISSION_REQUESTCODE)
-//            } else {
-//                //Denied
-//            }
-//        }
-//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -123,9 +106,6 @@ class CreatePlaceActivity : AppCompatActivity() {
     }
 
     private fun savePlace(storageRef: StorageReference) {
-//        if (imageURI != null){
-//            saveImageToStorage()
-//        }
         val name = placeNameEditText.text.toString()
         val description = descriptionEditText.text.toString()
         val published = publishedSwitch.isChecked

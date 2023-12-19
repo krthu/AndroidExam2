@@ -32,11 +32,16 @@ class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>)
         val place = places[position]
 
         holder.placeNameTextView.text = place.name
+
         val storageRef = place.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
         Log.d("!!!", storageRef.toString())
         storageRef?.downloadUrl?.addOnSuccessListener { uri ->
+            //holder.rowPlaceImageView.layout(0,0,0,0)
             Glide.with(context)
                 .load(uri)
+                .centerCrop()
+                .placeholder(R.drawable.baseline_question_mark_24)
+                .override(200, 200)
                 .into(holder.rowPlaceImageView)
         }
 
