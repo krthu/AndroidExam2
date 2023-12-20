@@ -1,10 +1,9 @@
 package com.example.androidexam2
 
-import android.os.Parcelable
 import com.google.firebase.firestore.DocumentId
 import java.io.Serializable
 
-data class Place (
+data class Meal (
     @DocumentId var placeId: String? = null,
     var name: String? = null,
     var description: String? = null,

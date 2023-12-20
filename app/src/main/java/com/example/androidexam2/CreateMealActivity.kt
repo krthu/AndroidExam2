@@ -3,13 +3,9 @@ package com.example.androidexam2
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
-import android.provider.Settings
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -18,8 +14,6 @@ import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
 import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
@@ -31,22 +25,22 @@ import com.google.firebase.storage.StorageReference
 
 import java.util.UUID
 
-class CreatePlaceActivity : AppCompatActivity() {
+class CreateMealActivity : AppCompatActivity() {
     lateinit var publishedSwitch: Switch
-    lateinit var placeNameEditText: EditText
+    lateinit var mealNameEditText: EditText
     lateinit var descriptionEditText: EditText
-    lateinit var placeImageView: ImageView
+    lateinit var mealImageView: ImageView
     val PERMISSION_REQUESTCODE = 1
     private lateinit var pickImage: ActivityResultLauncher<String>
     var imageURI: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_place)
+        setContentView(R.layout.activity_create_meal)
         publishedSwitch = findViewById(R.id.publishedSwitch)
-        placeNameEditText = findViewById(R.id.placeNameEditText)
+        mealNameEditText = findViewById(R.id.mealNameEditText)
         descriptionEditText = findViewById(R.id.descriptionEditText)
-        placeImageView = findViewById(R.id.placeImageView)
+        mealImageView = findViewById(R.id.mealImageView)
         pickImage =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -57,15 +51,15 @@ class CreatePlaceActivity : AppCompatActivity() {
                 }
 
             }
-        findViewById<Button>(R.id.savePlaceButton).setOnClickListener {
+        findViewById<Button>(R.id.saveMealButton).setOnClickListener {
             saveImageToStorage()
         }
 
-        findViewById<FloatingActionButton>(R.id.backCreatPlaceFloatingActionButton).setOnClickListener {
+        findViewById<FloatingActionButton>(R.id.backCreatMealFloatingActionButton).setOnClickListener {
             finish()
         }
 
-        placeImageView.setOnClickListener {
+        mealImageView.setOnClickListener {
             checkAndRequestPermission()
         }
 
@@ -100,13 +94,13 @@ class CreatePlaceActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
             imageURI = data.data
-            placeImageView.setImageURI(imageURI)
+            mealImageView.setImageURI(imageURI)
 
         }
     }
 
     private fun savePlace(storageRef: StorageReference) {
-        val name = placeNameEditText.text.toString()
+        val name = mealNameEditText.text.toString()
         val description = descriptionEditText.text.toString()
         val published = publishedSwitch.isChecked
         Log.d("!!!", "Inside SavePlace")
@@ -116,7 +110,7 @@ class CreatePlaceActivity : AppCompatActivity() {
             return
         }
         val auth = Firebase.auth
-        val place = Place(
+        val meal = Meal(
             name = name,
             description = description,
             published = published,
@@ -125,7 +119,7 @@ class CreatePlaceActivity : AppCompatActivity() {
         )
 
         val db = FirebaseFirestore.getInstance()
-        db.collection("places").add(place).addOnSuccessListener {
+        db.collection("meals").add(meal).addOnSuccessListener {
             finish()
         }
     }

@@ -1,41 +1,30 @@
 package com.example.androidexam2
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import androidx.core.content.ContextCompat
-import androidx.core.content.PackageManagerCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
-import android.Manifest
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.GridLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     //lateinit var createPlaceButton: Button
-    lateinit var createPlaceFloatingActionButton: FloatingActionButton
+    lateinit var createMealFloatingActionButton: FloatingActionButton
     lateinit var auth: FirebaseAuth
-    val places = mutableListOf<Place>()
+    val meals = mutableListOf<Meal>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        createPlaceFloatingActionButton = findViewById(R.id.createPlaceButtonFloatingActionButton)
+        createMealFloatingActionButton = findViewById(R.id.createMealButtonFloatingActionButton)
         findViewById<Button>(R.id.profileButton).setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
@@ -45,8 +34,8 @@ class MainActivity : AppCompatActivity() {
 //        val menu: Menu = bottomNav.menu
 //        val menuItem: MenuItem? = menu.findItem(R.id.item_3)
 //        menuItem?.title = "Test"
-        val adapter = PlaceRecyclerAdapter(this, places)
-        val recycler = findViewById<RecyclerView>(R.id.placeRecyclerView)
+        val adapter = MealAdapter(this, meals)
+        val recycler = findViewById<RecyclerView>(R.id.mealRecyclerView)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = GridLayoutManager(this, 2)
         recycler.adapter = adapter
@@ -58,14 +47,14 @@ class MainActivity : AppCompatActivity() {
 //            bottomNav.menu.findItem(R.id.item_3).title = "User"
 //        }
         val db = FirebaseFirestore.getInstance()
-        db.collection("places").addSnapshotListener { snapshot, error ->
+        db.collection("meals").addSnapshotListener { snapshot, error ->
             if (snapshot != null) {
-                places.clear()
+                meals.clear()
                 for (document in snapshot.documents) {
                     if (document != null) {
-                        val place = document.toObject<Place>()
-                        if (place != null) {
-                            places.add(place)
+                        val meal = document.toObject<Meal>()
+                        if (meal != null) {
+                            meals.add(meal)
                         }
                     }
                 }
@@ -75,12 +64,12 @@ class MainActivity : AppCompatActivity() {
         //createPlaceButton = findViewById<Button>(R.id.createPlaceButton)
 
 //        val auth = Firebase.auth
-         //auth.signOut()
+         auth.signOut()
 //        if (auth.currentUser != null){
 //            createPlaceButton.isVisible = true
 //        }
-        createPlaceFloatingActionButton.setOnClickListener {
-            val intent = Intent(this, CreatePlaceActivity::class.java)
+        createMealFloatingActionButton.setOnClickListener {
+            val intent = Intent(this, CreateMealActivity::class.java)
             startActivity(intent)
         }
     }
@@ -90,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
         // auth.signOut()
         if (auth.currentUser != null) {
-            createPlaceFloatingActionButton.isVisible = true
+            createMealFloatingActionButton.isVisible = true
         }
     }
 

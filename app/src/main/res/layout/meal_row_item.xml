@@ -21,7 +21,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/rowPlaceImageView"
+                android:id="@+id/rowMealImageView"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -39,10 +39,10 @@
                 android:background="#ADEFD1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rowPlaceImageView">
+                app:layout_constraintTop_toBottomOf="@+id/rowMealImageView">
 
                 <TextView
-                    android:id="@+id/placeNameTextView"
+                    android:id="@+id/mealNameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"

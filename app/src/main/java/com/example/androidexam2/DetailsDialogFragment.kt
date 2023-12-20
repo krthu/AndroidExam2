@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 
-class DetailsDialogFragment(val item: Place,val uri: Uri?): DialogFragment() {
+class DetailsDialogFragment(val meal: Meal, val uri: Uri?): DialogFragment() {
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -19,8 +19,8 @@ class DetailsDialogFragment(val item: Place,val uri: Uri?): DialogFragment() {
         val headline = view.findViewById<TextView>(R.id.detailsHeadLineTextView)
         val descriptionTextView = view.findViewById<TextView>(R.id.desriptionTextView)
         val detailsImageView = view.findViewById<ImageView>(R.id.detailsImageView)
-        headline.text = item.name
-        descriptionTextView. text = item.description
+        headline.text = meal.name
+        descriptionTextView. text = meal.description
         Glide.with(this)
             .load(uri)
             .centerCrop()

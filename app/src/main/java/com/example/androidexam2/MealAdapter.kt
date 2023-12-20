@@ -3,7 +3,6 @@ package com.example.androidexam2
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,28 +13,28 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
 
-class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>): RecyclerView.Adapter<PlaceRecyclerAdapter.ItemViewHolder>() {
+class MealAdapter(val context: Context, val meals: MutableList<Meal>): RecyclerView.Adapter<MealAdapter.ItemViewHolder>() {
     inner class ItemViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
-        val placeNameTextView = itemView.findViewById<TextView>(R.id.placeNameTextView)
-        val rowPlaceImageView = itemView.findViewById<ImageView>(R.id.rowPlaceImageView)
+        val mealNameTextView = itemView.findViewById<TextView>(R.id.mealNameTextView)
+        val rowMealImageView = itemView.findViewById<ImageView>(R.id.rowMealImageView)
     }
 
     val inflater = LayoutInflater.from(context)
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        var itemView = inflater.inflate(R.layout.place_row_item, parent, false)
+        var itemView = inflater.inflate(R.layout.meal_row_item, parent, false)
         var viewHolder = ItemViewHolder(itemView)
         return viewHolder
     }
 
-    override fun getItemCount() = places.size
+    override fun getItemCount() = meals.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val place = places[position]
+        val place = meals[position]
         var setUri: Uri? = null
 
-        holder.placeNameTextView.text = place.name
+        holder.mealNameTextView.text = place.name
         holder.itemView.setOnClickListener{
             //showDetailsDialogFragment(place, setUri)
             goToDetailsActivity(place, setUri)
@@ -50,21 +49,21 @@ class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>)
                 .centerCrop()
                 .placeholder(R.drawable.baseline_question_mark_24)
                 .override(200, 200)
-                .into(holder.rowPlaceImageView)
+                .into(holder.rowMealImageView)
         }
 
 
     }
 
-    private fun showDetailsDialogFragment(place: Place, setUri: Uri?) {
+    private fun showDetailsDialogFragment(meal: Meal, setUri: Uri?) {
         val fragmentManager = (context as FragmentActivity).supportFragmentManager
-        val dialogFragment = DetailsDialogFragment(place, setUri)
+        val dialogFragment = DetailsDialogFragment(meal, setUri)
         dialogFragment.show(fragmentManager, "DetailsFragment")
     }
 
-    private fun goToDetailsActivity(place: Place, setUri: Uri?){
+    private fun goToDetailsActivity(meal: Meal, setUri: Uri?){
         val intent = Intent(context, DetailsActivity::class.java)
-        intent.putExtra("item_key", place)
+        intent.putExtra("item_key", meal)
         intent.data = setUri
         context.startActivity(intent)
 
