@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,9 +35,11 @@ class CreateMealActivity : AppCompatActivity() {
     lateinit var mealNameEditText: EditText
     lateinit var descriptionEditText: EditText
     lateinit var mealImageView: ImageView
+    lateinit var gpsTextView: TextView
     val PERMISSION_REQUESTCODE = 1
     private lateinit var pickImage: ActivityResultLauncher<String>
     var imageURI: Uri? = null
+    var gpsArray = mutableListOf<Double>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +48,7 @@ class CreateMealActivity : AppCompatActivity() {
         mealNameEditText = findViewById(R.id.mealNameEditText)
         descriptionEditText = findViewById(R.id.descriptionEditText)
         mealImageView = findViewById(R.id.mealImageView)
+        gpsTextView = findViewById(R.id.gpsTextView)
         findViewById<Button>(R.id.addLocationButton).setOnClickListener {
             intent = Intent(this, AddLocationActivity::class.java)
             startActivity(intent)
@@ -103,64 +107,36 @@ class CreateMealActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
             imageURI = data.data
             mealImageView.setImageURI(imageURI)
+            //val coordinates = getGPSFromUri()
             val coordinates = getGPSFromUri()
-            if (coordinates != null)
-                Log.d("!!!", "Lat = ${coordinates[0]} Long = ${coordinates[1]}" )
-          //  val latLangPair = getGPSCoordinates()
-           // Log.d("!!!", latLangPair.toString())
 
+            if (coordinates != null){
+                gpsArray.add(coordinates[0])
+                gpsArray.add(coordinates[1])
+
+                gpsTextView.text = "Lat: ${gpsArray[0]} Long: ${gpsArray[1]}"
+            }
+
+            if (coordinates != null) {
+                Log.d("!!!", "Lat = ${coordinates[0]} Long = ${coordinates[1]}")
+            }
         }
     }
 
-    private fun getGPSFromUri(): DoubleArray?{
+    private fun getGPSFromUri(): DoubleArray? {
 
-        imageURI?.let { contentResolver.openInputStream(it).use { stream ->
-            if (stream != null) {
-                ExifInterface(stream).let { exif ->
-                    return exif.latLong
+        imageURI?.let {
+            contentResolver.openInputStream(it).use { stream ->
+                if (stream != null) {
+                    ExifInterface(stream).let { exif ->
+                        return exif.latLong
+                    }
                 }
             }
-        } }
-        return null
-    }
-
-    private fun getGPSCoordinates(): Pair<Double, Double>? {
-        try {
-            val filePath = getRealPathFromURI()
-            Log.d("!!!", filePath.toString())
-            if (filePath != null){
-                val exifInterface = ExifInterface(filePath)
-                Log.d("!!!", exifInterface.latLong.toString())
-                val lat = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-                val long = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-                Log.d("!!!", lat?.toDouble().toString())
-                Log.d("!!!", "long ${long?.toDouble()}")
-//                if (latLong != null){
-//                    Log.d("!!!", "Lat lang not null")
-//                    val lat = latLong[0].toDouble()
-//                    val lang = latLong[1].toDouble()
-//                    return Pair(lat, lang)
-//                }
-            }
-
-        }catch (e: IOException){
-            Log.e("!!!", "Error reading exit", e )
         }
         return null
     }
 
-    fun getRealPathFromURI(): String? {
-        var cursor: Cursor? = null
-        try {
-            val proj = arrayOf(MediaStore.Images.Media.DATA)
-            cursor = imageURI?.let { this.contentResolver.query(it, proj, null, null, null) }
-            val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            cursor?.moveToFirst()
-            return columnIndex?.let { cursor?.getString(it) }
-        } finally {
-            cursor?.close()
-        }
-    }
 
     private fun savePlace(storageRef: StorageReference) {
         val name = mealNameEditText.text.toString()
@@ -178,7 +154,8 @@ class CreateMealActivity : AppCompatActivity() {
             description = description,
             published = published,
             creator = auth.currentUser?.uid,
-            imageURI = storageRef.toString()
+            imageURI = storageRef.toString(),
+            gpsArray = gpsArray
         )
 
         val db = FirebaseFirestore.getInstance()

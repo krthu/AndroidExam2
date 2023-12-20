@@ -9,6 +9,7 @@ data class Meal (
     var description: String? = null,
     var creator: String? = null,
     var published: Boolean = false,
-    var imageURI: String? = null
+    var imageURI: String? = null,
+    var gpsArray: MutableList<Double>? = null
 ): Serializable{
 }
