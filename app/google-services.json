@@ -15,8 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDlOGQBCBvjGA6ypkeZSnFQHi-QPmp1EX4",
-          "MAPS_API_KEY": ""
+          "current_key": "AIzaSyDlOGQBCBvjGA6ypkeZSnFQHi-QPmp1EX4"
         }
       ],
       "services": {
@@ -28,3 +27,4 @@
   ],
   "configuration_version": "1"
 }
+
