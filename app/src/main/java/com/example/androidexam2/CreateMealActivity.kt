@@ -3,9 +3,11 @@ package com.example.androidexam2
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -15,12 +17,14 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.exifinterface.media.ExifInterface
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.io.IOException
 
 
 import java.util.UUID
@@ -41,6 +45,10 @@ class CreateMealActivity : AppCompatActivity() {
         mealNameEditText = findViewById(R.id.mealNameEditText)
         descriptionEditText = findViewById(R.id.descriptionEditText)
         mealImageView = findViewById(R.id.mealImageView)
+        findViewById<Button>(R.id.addLocationButton).setOnClickListener {
+            intent = Intent(this, AddLocationActivity::class.java)
+            startActivity(intent)
+        }
         pickImage =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -95,7 +103,47 @@ class CreateMealActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
             imageURI = data.data
             mealImageView.setImageURI(imageURI)
+            val latLangPair = getGPSCoordinates()
+            Log.d("!!!", latLangPair.toString())
 
+        }
+    }
+
+    private fun getGPSCoordinates(): Pair<Double, Double>? {
+        try {
+            val filePath = getRealPathFromURI()
+            Log.d("!!!", filePath.toString())
+            if (filePath != null){
+                val exifInterface = ExifInterface(filePath)
+                Log.d("!!!", exifInterface.latLong.toString())
+                val lat = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+                val long = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+                Log.d("!!!", lat?.toDouble().toString())
+                Log.d("!!!", "long ${long?.toDouble()}")
+//                if (latLong != null){
+//                    Log.d("!!!", "Lat lang not null")
+//                    val lat = latLong[0].toDouble()
+//                    val lang = latLong[1].toDouble()
+//                    return Pair(lat, lang)
+//                }
+            }
+
+        }catch (e: IOException){
+            Log.e("!!!", "Error reading exit", e )
+        }
+        return null
+    }
+
+    fun getRealPathFromURI(): String? {
+        var cursor: Cursor? = null
+        try {
+            val proj = arrayOf(MediaStore.Images.Media.DATA)
+            cursor = imageURI?.let { this.contentResolver.query(it, proj, null, null, null) }
+            val columnIndex = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            cursor?.moveToFirst()
+            return columnIndex?.let { cursor?.getString(it) }
+        } finally {
+            cursor?.close()
         }
     }
 

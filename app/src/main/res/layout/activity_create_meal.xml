@@ -96,4 +96,13 @@
             app:layout_constraintTop_toBottomOf="@+id/backCreatMealFloatingActionButton" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <Button
+        android:id="@+id/addLocationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        app:layout_constraintEnd_toStartOf="@+id/publishedSwitch"
+        app:layout_constraintStart_toEndOf="@+id/backCreatMealFloatingActionButton"
+        tools:layout_editor_absoluteY="66dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
