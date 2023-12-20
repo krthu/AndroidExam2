@@ -15,7 +15,7 @@ class DetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
         val uri = intent.data
-        val place = intent.getSerializableExtra("item_key") as Place
+        val meal = intent.getSerializableExtra("item_key") as Meal
         val detailsImageView = findViewById<ImageView>(R.id.detailsImage)
         val descriptionTextView = findViewById<TextView>(R.id.detailsDescriptionTextView)
         val headerTextView = findViewById<TextView>(R.id.detailsHeaderTextView)
@@ -24,8 +24,8 @@ class DetailsActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
-        descriptionTextView.text = place.description
-        headerTextView.text = place.name
+        descriptionTextView.text = meal.description
+        headerTextView.text = meal.name
         Glide.with(this)
             .load(uri)
             .centerCrop()
@@ -33,7 +33,7 @@ class DetailsActivity : AppCompatActivity() {
 
         val db = FirebaseFirestore.getInstance()
 
-        val creatorId = place.creator
+        val creatorId = meal.creator
         if (creatorId != null){
             db.collection("users").document(creatorId).get()
                 .addOnSuccessListener { document ->
