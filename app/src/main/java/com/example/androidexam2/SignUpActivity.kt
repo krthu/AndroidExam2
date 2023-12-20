@@ -72,7 +72,8 @@ class SignUpActivity : AppCompatActivity() {
                     Log.d("!!!", "User SignedUp success")
                     val user = User(userId = auth.currentUser?.uid, userName = userName)
                     val db = FirebaseFirestore.getInstance()
-                    db.collection("users").add(user)
+//                    db.collection("users").add(user)
+                    user.userId?.let { db.collection("users").document(it).set(user) }
                     finish()
                 } else {
                     Log.d("!!!", "User not created ${signup.exception}")

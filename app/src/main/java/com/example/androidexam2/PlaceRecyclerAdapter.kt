@@ -42,7 +42,6 @@ class PlaceRecyclerAdapter(val context: Context, val places: MutableList<Place>)
         }
 
         val storageRef = place.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
-        Log.d("!!!", storageRef.toString())
         storageRef?.downloadUrl?.addOnSuccessListener { uri ->
             //holder.rowPlaceImageView.layout(0,0,0,0)
             setUri = uri
