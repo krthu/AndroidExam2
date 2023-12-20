@@ -103,10 +103,25 @@ class CreateMealActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
             imageURI = data.data
             mealImageView.setImageURI(imageURI)
-            val latLangPair = getGPSCoordinates()
-            Log.d("!!!", latLangPair.toString())
+            val coordinates = getGPSFromUri()
+            if (coordinates != null)
+                Log.d("!!!", "Lat = ${coordinates[0]} Long = ${coordinates[1]}" )
+          //  val latLangPair = getGPSCoordinates()
+           // Log.d("!!!", latLangPair.toString())
 
         }
+    }
+
+    private fun getGPSFromUri(): DoubleArray?{
+
+        imageURI?.let { contentResolver.openInputStream(it).use { stream ->
+            if (stream != null) {
+                ExifInterface(stream).let { exif ->
+                    return exif.latLong
+                }
+            }
+        } }
+        return null
     }
 
     private fun getGPSCoordinates(): Pair<Double, Double>? {

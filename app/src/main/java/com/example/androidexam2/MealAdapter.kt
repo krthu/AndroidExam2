@@ -48,7 +48,7 @@ class MealAdapter(val context: Context, val meals: MutableList<Meal>): RecyclerV
                 .load(uri)
                 .centerCrop()
                 .placeholder(R.drawable.baseline_question_mark_24)
-                .override(200, 200)
+//                .override(200, 200)
                 .into(holder.rowMealImageView)
         }
 
