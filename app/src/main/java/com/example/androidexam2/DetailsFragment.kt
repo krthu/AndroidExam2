@@ -1,5 +1,6 @@
 package com.example.androidexam2
 
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -59,6 +60,7 @@ class DetailsFragment : Fragment() {
         val backButton =
             view.findViewById<FloatingActionButton>(R.id.detailsBackFloatingActionButton)
         val creatorTextView = view.findViewById<TextView>(R.id.creatorTextView)
+
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -84,7 +86,22 @@ class DetailsFragment : Fragment() {
 
 
         }
+        val locationImageView = view.findViewById<ImageView>(R.id.detailsLocationImageView)
+        locationImageView.setOnClickListener {
+            goToMapsFragment()
+        }
 
+    }
+
+    private fun goToMapsFragment(){
+        val bundle = Bundle()
+        bundle.putSerializable("meal", meal)
+        val mapFragment = MapsFragment()
+        mapFragment.arguments = bundle
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.addToBackStack(null)
+        transaction.replace(R.id.fragmentContainer, mapFragment)
+        transaction.commit()
     }
 
     companion object {

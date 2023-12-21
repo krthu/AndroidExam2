@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.Button
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -115,6 +116,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 
     override fun onResume() {
         super.onResume()
+        activity?.supportFragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         if (auth.currentUser != null) {
             createMealFloatingActionButton.isVisible = true
         }
