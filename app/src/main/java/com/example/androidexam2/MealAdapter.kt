@@ -64,14 +64,4 @@ interface onItemClickListner {
         dialogFragment.show(fragmentManager, "DetailsFragment")
     }
 
-    private fun goToDetailsActivity(meal: Meal, setUri: Uri?){
-
-        val intent = Intent(context, DetailsActivity::class.java)
-        intent.putExtra("item_key", meal)
-        intent.data = setUri
-        context.startActivity(intent)
-
-    }
-
-
 }
