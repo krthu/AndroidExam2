@@ -12,8 +12,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
-
-class MealAdapter(val context: Context, val meals: MutableList<Meal>): RecyclerView.Adapter<MealAdapter.ItemViewHolder>() {
+class MealAdapter(val context: Context, val meals: MutableList<Meal>, val listner: onItemClickListner): RecyclerView.Adapter<MealAdapter.ItemViewHolder>() {
+interface onItemClickListner {
+    fun onItemClick(meal: Meal, setUri: Uri?)
+}
     inner class ItemViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val mealNameTextView = itemView.findViewById<TextView>(R.id.mealNameTextView)
         val rowMealImageView = itemView.findViewById<ImageView>(R.id.rowMealImageView)
@@ -31,16 +33,17 @@ class MealAdapter(val context: Context, val meals: MutableList<Meal>): RecyclerV
     override fun getItemCount() = meals.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val place = meals[position]
+        val meal = meals[position]
         var setUri: Uri? = null
 
-        holder.mealNameTextView.text = place.name
+        holder.mealNameTextView.text = meal.name
         holder.itemView.setOnClickListener{
             //showDetailsDialogFragment(place, setUri)
-            goToDetailsActivity(place, setUri)
+            //goToDetailsActivity(place, setUri)
+            listner.onItemClick(meal, setUri)
         }
 
-        val storageRef = place.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
+        val storageRef = meal.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
         storageRef?.downloadUrl?.addOnSuccessListener { uri ->
             //holder.rowPlaceImageView.layout(0,0,0,0)
             setUri = uri
@@ -60,14 +63,5 @@ class MealAdapter(val context: Context, val meals: MutableList<Meal>): RecyclerV
         val dialogFragment = DetailsDialogFragment(meal, setUri)
         dialogFragment.show(fragmentManager, "DetailsFragment")
     }
-
-    private fun goToDetailsActivity(meal: Meal, setUri: Uri?){
-        val intent = Intent(context, DetailsActivity::class.java)
-        intent.putExtra("item_key", meal)
-        intent.data = setUri
-        context.startActivity(intent)
-
-    }
-
 
 }
