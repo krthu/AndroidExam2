@@ -113,8 +113,9 @@ class CreateMealActivity : AppCompatActivity() {
             if (coordinates != null){
                 gpsArray.add(coordinates[0])
                 gpsArray.add(coordinates[1])
-
-                gpsTextView.text = "Lat: ${gpsArray[0]} Long: ${gpsArray[1]}"
+                val formatLat = String.format("%.5f", gpsArray[0])
+                val formatLong = String.format("%.5f", gpsArray[1])
+                gpsTextView.text = "Lat: $formatLat Long: $formatLong"
             }
 
             if (coordinates != null) {
