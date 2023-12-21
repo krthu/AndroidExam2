@@ -1,11 +1,13 @@
 package com.example.androidexam2
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.Button
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -28,7 +30,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), MealAdapter.onItemClickListner {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -63,7 +65,7 @@ class ListFragment : Fragment() {
         }
 
 
-        val adapter = MealAdapter(requireContext(), meals)
+        val adapter = MealAdapter(requireContext(), meals, this)
         val recycler = view.findViewById<RecyclerView>(R.id.mealRecyclerView)
         recycler.setHasFixedSize(true)
         recycler.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -127,4 +129,24 @@ class ListFragment : Fragment() {
                 }
             }
     }
+
+    override fun onItemClick(meal: Meal, setUri: Uri?) {
+        val bundle = Bundle()
+        bundle.putSerializable("meal", meal)
+
+        bundle.putString("uri", setUri.toString())
+        startTransaction(bundle)
+
+    }
+
+    fun startTransaction(bundle: Bundle){
+        val detailsFragment = DetailsFragment()
+        detailsFragment.arguments = bundle
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.addToBackStack(null)
+        transaction.replace(R.id.fragmentContainer, detailsFragment)
+        transaction.commit()
+    }
+
+
 }
