@@ -96,6 +96,11 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 //        }
         createMealFloatingActionButton.setOnClickListener {
             // TODO: Fixa intent för fragment
+            val createMealFragment = CreateMealFragment()
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.addToBackStack(null)
+            transaction.replace(R.id.fragmentContainer, createMealFragment)
+            transaction.commit()
 //            val intent = Intent(this, CreateMealActivity::class.java)
 //            startActivity(intent)
         }
