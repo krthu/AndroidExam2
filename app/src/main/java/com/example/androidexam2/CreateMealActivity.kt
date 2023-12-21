@@ -3,24 +3,29 @@ package com.example.androidexam2
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.exifinterface.media.ExifInterface
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import java.io.IOException
 
 
 import java.util.UUID
@@ -30,9 +35,11 @@ class CreateMealActivity : AppCompatActivity() {
     lateinit var mealNameEditText: EditText
     lateinit var descriptionEditText: EditText
     lateinit var mealImageView: ImageView
+    lateinit var gpsTextView: TextView
     val PERMISSION_REQUESTCODE = 1
     private lateinit var pickImage: ActivityResultLauncher<String>
     var imageURI: Uri? = null
+    var gpsArray = mutableListOf<Double>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +48,11 @@ class CreateMealActivity : AppCompatActivity() {
         mealNameEditText = findViewById(R.id.mealNameEditText)
         descriptionEditText = findViewById(R.id.descriptionEditText)
         mealImageView = findViewById(R.id.mealImageView)
+        gpsTextView = findViewById(R.id.gpsTextView)
+        findViewById<Button>(R.id.addLocationButton).setOnClickListener {
+            intent = Intent(this, AddLocationActivity::class.java)
+            startActivity(intent)
+        }
         pickImage =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -95,9 +107,37 @@ class CreateMealActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUESTCODE && resultCode == RESULT_OK && data != null) {
             imageURI = data.data
             mealImageView.setImageURI(imageURI)
+            //val coordinates = getGPSFromUri()
+            val coordinates = getGPSFromUri()
 
+            if (coordinates != null){
+                gpsArray.add(coordinates[0])
+                gpsArray.add(coordinates[1])
+                val formatLat = String.format("%.5f", gpsArray[0])
+                val formatLong = String.format("%.5f", gpsArray[1])
+                gpsTextView.text = "Lat: $formatLat Long: $formatLong"
+            }
+
+            if (coordinates != null) {
+                Log.d("!!!", "Lat = ${coordinates[0]} Long = ${coordinates[1]}")
+            }
         }
     }
+
+    private fun getGPSFromUri(): DoubleArray? {
+
+        imageURI?.let {
+            contentResolver.openInputStream(it).use { stream ->
+                if (stream != null) {
+                    ExifInterface(stream).let { exif ->
+                        return exif.latLong
+                    }
+                }
+            }
+        }
+        return null
+    }
+
 
     private fun savePlace(storageRef: StorageReference) {
         val name = mealNameEditText.text.toString()
@@ -115,7 +155,8 @@ class CreateMealActivity : AppCompatActivity() {
             description = description,
             published = published,
             creator = auth.currentUser?.uid,
-            imageURI = storageRef.toString()
+            imageURI = storageRef.toString(),
+            gpsArray = gpsArray
         )
 
         val db = FirebaseFirestore.getInstance()
