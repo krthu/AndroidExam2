@@ -36,7 +36,7 @@ class DetailsFragment : Fragment() {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
-            meal = it.getSerializable("meal" ) as Meal?
+            meal = it.getSerializable("meal") as Meal?
             val uriString = it.getString("uri")
             uri = Uri.parse(uriString)
 
@@ -56,7 +56,8 @@ class DetailsFragment : Fragment() {
         val detailsImageView = view.findViewById<ImageView>(R.id.detailsImage)
         val descriptionTextView = view.findViewById<TextView>(R.id.detailsDescriptionTextView)
         val headerTextView = view.findViewById<TextView>(R.id.detailsHeaderTextView)
-        val backButton = view.findViewById<FloatingActionButton>(R.id.detailsBackFloatingActionButton)
+        val backButton =
+            view.findViewById<FloatingActionButton>(R.id.detailsBackFloatingActionButton)
         val creatorTextView = view.findViewById<TextView>(R.id.creatorTextView)
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack()
@@ -71,16 +72,15 @@ class DetailsFragment : Fragment() {
         val db = FirebaseFirestore.getInstance()
 
         val creatorId = meal?.creator
-        if (creatorId != null){
+        if (creatorId != null) {
             db.collection("users").document(creatorId).get()
                 .addOnSuccessListener { document ->
-                    if (document != null){
+                    if (document != null) {
                         val creator = document.toObject<User>()
                         Log.d("!!!", document.toString())
                         creatorTextView.text = creator?.userName
                     }
                 }
-
 
 
         }

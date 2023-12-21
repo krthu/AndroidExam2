@@ -57,16 +57,17 @@ class SignUpFragment : Fragment() {
         passwordEditText = view.findViewById(R.id.passwordEditText)
         userNameEditText = view.findViewById(R.id.userNameEditText)
         emailEditText = view.findViewById(R.id.emailEditText)
-        view.findViewById<Button>(R.id.signUpButton).setOnClickListener{
+        view.findViewById<Button>(R.id.signUpButton).setOnClickListener {
             signUp()
         }
-        view.findViewById<Button>(R.id.signInButton).setOnClickListener{
+        view.findViewById<Button>(R.id.signInButton).setOnClickListener {
             signIn()
         }
 
-        view.findViewById<FloatingActionButton>(R.id.backSignUpFloatingActionButton).setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
+        view.findViewById<FloatingActionButton>(R.id.backSignUpFloatingActionButton)
+            .setOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
 
         auth = Firebase.auth
     }
@@ -75,7 +76,7 @@ class SignUpFragment : Fragment() {
         val email = emailEditText.text.toString()
         val userName = userNameEditText.text.toString()
         val password = passwordEditText.text.toString()
-        Log.d("!!!" ,"${email.isEmpty()} ${userName.isEmpty()} ${password.isEmpty()}")
+        Log.d("!!!", "${email.isEmpty()} ${userName.isEmpty()} ${password.isEmpty()}")
 
         if (email.isEmpty() || userName.isEmpty() || password.isEmpty()) {
 
@@ -86,17 +87,18 @@ class SignUpFragment : Fragment() {
                 }
 
                 userName.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.userNameEmpty, Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), R.string.userNameEmpty, Toast.LENGTH_LONG)
+                        .show()
                     return
                 }
 
                 password.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.passwordEmpty, Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), R.string.passwordEmpty, Toast.LENGTH_LONG)
+                        .show()
                     return
                 }
             }
-        }
-        else {
+        } else {
             Log.d("!!!", "Nothing is empty")
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { signup ->
@@ -114,7 +116,7 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    fun signIn(){
+    fun signIn() {
         val email = emailEditText.text.toString()
 
         val password = passwordEditText.text.toString()
@@ -127,15 +129,15 @@ class SignUpFragment : Fragment() {
                 }
 
                 password.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.passwordEmpty, Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), R.string.passwordEmpty, Toast.LENGTH_LONG)
+                        .show()
                     return
                 }
             }
-        }
-        else {
+        } else {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener() { signIn ->
-                    if (signIn.isSuccessful){
+                    if (signIn.isSuccessful) {
                         parentFragmentManager.popBackStack()
                     }
                 }

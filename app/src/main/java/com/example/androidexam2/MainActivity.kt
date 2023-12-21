@@ -17,12 +17,13 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
         loadFragment()
-        bottomNavigationView.setOnItemSelectedListener {menuItem ->
+        bottomNavigationView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.item_1 -> {
-                        loadFragment()
+                    loadFragment()
                     true
                 }
+
                 else -> {
                     false
                 }
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadFragment(){
+    private fun loadFragment() {
         val listFragment = ListFragment()
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()

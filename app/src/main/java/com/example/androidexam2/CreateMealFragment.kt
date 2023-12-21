@@ -79,8 +79,8 @@ class CreateMealFragment : Fragment() {
         mealImageView = view.findViewById(R.id.mealImageView)
         gpsTextView = view.findViewById(R.id.gpsTextView)
         view.findViewById<Button>(R.id.addLocationButton).setOnClickListener {
-           // intent = Intent(this, AddLocationActivity::class.java)
-           // startActivity(intent)
+            // intent = Intent(this, AddLocationActivity::class.java)
+            // startActivity(intent)
         }
         pickImage =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -96,9 +96,10 @@ class CreateMealFragment : Fragment() {
             saveImageToStorage()
         }
 
-        view.findViewById<FloatingActionButton>(R.id.backCreatMealFloatingActionButton).setOnClickListener {
-            parentFragmentManager.popBackStack()
-        }
+        view.findViewById<FloatingActionButton>(R.id.backCreatMealFloatingActionButton)
+            .setOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
 
         mealImageView.setOnClickListener {
             checkAndRequestPermission()
@@ -138,7 +139,7 @@ class CreateMealFragment : Fragment() {
             //val coordinates = getGPSFromUri()
             val coordinates = getGPSFromUri()
 
-            if (coordinates != null){
+            if (coordinates != null) {
                 gpsArray.add(coordinates[0])
                 gpsArray.add(coordinates[1])
                 val formatLat = String.format("%.5f", gpsArray[0])

@@ -57,7 +57,8 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        createMealFloatingActionButton = view.findViewById(R.id.createMealButtonFloatingActionButton)
+        createMealFloatingActionButton =
+            view.findViewById(R.id.createMealButtonFloatingActionButton)
         view.findViewById<Button>(R.id.profileButton).setOnClickListener {
             // TODO: Fixa intent för fragment
             val signupFragment = SignUpFragment()
@@ -95,7 +96,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         //createPlaceButton = findViewById<Button>(R.id.createPlaceButton)
 
 //        val auth = Firebase.auth
-          //      auth.signOut()
+        //      auth.signOut()
 //        if (auth.currentUser != null){
 //            createPlaceButton.isVisible = true
 //        }
@@ -149,7 +150,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 
     }
 
-    fun startTransaction(bundle: Bundle){
+    fun startTransaction(bundle: Bundle) {
         val detailsFragment = DetailsFragment()
         detailsFragment.arguments = bundle
         val transaction = parentFragmentManager.beginTransaction()
