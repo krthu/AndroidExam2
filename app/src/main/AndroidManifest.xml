@@ -36,9 +36,6 @@
             android:label="@string/title_activity_add_location" />
 
         <activity
-            android:name=".SignUpActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

@@ -95,7 +95,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         //createPlaceButton = findViewById<Button>(R.id.createPlaceButton)
 
 //        val auth = Firebase.auth
-        //        auth.signOut()
+          //      auth.signOut()
 //        if (auth.currentUser != null){
 //            createPlaceButton.isVisible = true
 //        }
