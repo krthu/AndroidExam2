@@ -1,10 +1,22 @@
 package com.example.androidexam2
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,6 +33,9 @@ class ListFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    lateinit var createMealFloatingActionButton: FloatingActionButton
+    lateinit var auth: FirebaseAuth
+    val meals = mutableListOf<Meal>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -40,6 +55,56 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        createMealFloatingActionButton = view.findViewById(R.id.createMealButtonFloatingActionButton)
+        view.findViewById<Button>(R.id.profileButton).setOnClickListener {
+            // TODO: Fixa intent för fragment
+//            val intent = Intent(this, SignUpActivity::class.java)
+//            startActivity(intent)
+        }
+
+
+        val adapter = MealAdapter(requireContext(), meals)
+        val recycler = view.findViewById<RecyclerView>(R.id.mealRecyclerView)
+        recycler.setHasFixedSize(true)
+        recycler.layoutManager = GridLayoutManager(requireContext(), 2)
+        recycler.adapter = adapter
+        auth = Firebase.auth
+
+        val db = FirebaseFirestore.getInstance()
+        db.collection("meals").addSnapshotListener { snapshot, error ->
+            if (snapshot != null) {
+                meals.clear()
+                for (document in snapshot.documents) {
+                    if (document != null) {
+                        val meal = document.toObject<Meal>()
+                        if (meal != null) {
+                            meals.add(meal)
+                        }
+                    }
+                }
+            }
+            adapter.notifyDataSetChanged()
+        }
+        //createPlaceButton = findViewById<Button>(R.id.createPlaceButton)
+
+//        val auth = Firebase.auth
+        //        auth.signOut()
+//        if (auth.currentUser != null){
+//            createPlaceButton.isVisible = true
+//        }
+        createMealFloatingActionButton.setOnClickListener {
+            // TODO: Fixa intent för fragment
+//            val intent = Intent(this, CreateMealActivity::class.java)
+//            startActivity(intent)
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (auth.currentUser != null) {
+            createMealFloatingActionButton.isVisible = true
+        }
     }
 
 
