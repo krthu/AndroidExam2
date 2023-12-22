@@ -1,5 +1,6 @@
 package com.example.androidexam2
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
@@ -21,6 +22,11 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.item_1 -> {
                     loadFragment()
+                    true
+                }
+                R.id.item_2 -> {
+                    val intent = Intent(this, AddLocationActivity::class.java)
+                    startActivity(intent)
                     true
                 }
 
