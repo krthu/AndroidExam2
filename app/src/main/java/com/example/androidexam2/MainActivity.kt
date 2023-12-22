@@ -4,6 +4,7 @@ import android.content.ClipData.Item
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 
 import android.widget.FrameLayout
@@ -37,6 +38,12 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
 
+                R.id.item_3 -> {
+                    intent = Intent(this, AddLocationActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
                 else -> {
                     false
                 }
@@ -45,10 +52,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val fragmentManagerListener  = FragmentManager.OnBackStackChangedListener {
+        Log.d("!!!", "Fragment Changed")
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
         if (currentFragment is ListFragment){
+            Log.d("!!!", "Fragment Changed it is List")
             bottomNavigationView.selectedItemId = R.id.item_1
         } else if (currentFragment is DetailsFragment){
+            Log.d("!!!", "Fragment Changed it is Details")
             bottomNavigationView.selectedItemId = 0
         }
     }

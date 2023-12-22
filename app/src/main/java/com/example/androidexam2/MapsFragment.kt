@@ -9,14 +9,14 @@ import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.GestureDetector
+import android.view.GestureDetector.OnDoubleTapListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ContentInfoCompat.Flags
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -29,54 +29,63 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.firestore.memoryLruGcSettings
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
+import kotlin.math.ln
+
 
 class MapsFragment : Fragment() {
     private val REQUEST_LOCATION = 2
-    private var meal: Meal? = null
+    private var chosenMeal: Meal? = null
+    private val meals = mutableListOf<Meal>()
     private val zoomLevel = 10.0f
     private lateinit var loactionProvider: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private lateinit var getLocationAccess: ActivityResultLauncher<String>
     private lateinit var map: GoogleMap
+
     private val callback = OnMapReadyCallback { googleMap ->
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
         map = googleMap
         checkAndRequestPermission(googleMap)
 
         googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
-        if (meal != null){
+        if (chosenMeal != null){
             addOneMarker(googleMap)
+        } else {
+            Log.d("!!!", "We have no null chosenMeal")
+            getListOfMeals()
         }
-
-
-
-//        val sydney = LatLng(-34.0, 151.0)
-//        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 
+    private fun placeListOfMarkers(googleMap: GoogleMap) {
+        for (meal in meals){
+            val lat = meal.gpsArray?.get(0)
+            val lng = meal.gpsArray?.get(1)
+            if (lat != null && lng != null){
+                val latLng = LatLng(lat, lng)
+                val marker = googleMap.addMarker(MarkerOptions().position(latLng).title(meal.name))
+                marker?.tag = meal.placeId
+            }
+        }
+        googleMap.setOnMarkerClickListener { marker ->
+            val markerName = marker.title
+            false
+        }
+    }
 
     fun addOneMarker(googleMap: GoogleMap){
-        val lat = meal?.gpsArray?.get(0)
-        val long = meal?.gpsArray?.get(1)
+        val lat = chosenMeal?.gpsArray?.get(0)
+        val long = chosenMeal?.gpsArray?.get(1)
 
         if (lat != null && long != null){
             Log.d("!!!", "$lat & $long")
             val mealLatLng = LatLng(lat, long)
 
-            googleMap.addMarker(MarkerOptions().position(mealLatLng).title(meal?.name))
+            googleMap.addMarker(MarkerOptions().position(mealLatLng).title(chosenMeal?.name))
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mealLatLng, zoomLevel))
             if (map.isMyLocationEnabled){
                 loactionProvider.lastLocation.addOnSuccessListener { location: Location? ->
@@ -104,21 +113,10 @@ class MapsFragment : Fragment() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         loactionProvider = LocationServices.getFusedLocationProviderClient(requireContext())
-        locationRequest = LocationRequest.Builder(2000).build()
-
-
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                for (location in locationResult.locations){
-                    Log.d("!!!", "Lat: ${location.latitude}, lng: ${location.longitude}")
-                }
-            }
-        }
         getLocationAccess = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted){
                 Log.d("!!!", "We have permission")
@@ -127,31 +125,37 @@ class MapsFragment : Fragment() {
         }
 
         arguments?.let {
-            meal = it.getSerializable("meal") as Meal?
-
+            chosenMeal = it.getSerializable("meal") as Meal?
         }
     }
 
     private fun checkAndRequestPermission(googleMap: GoogleMap){
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PERMISSION_GRANTED) {
             getLocationAccess.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-
         } else {
             googleMap.isMyLocationEnabled = true
         }
     }
-    private fun startLocationUpdate() {
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-        == PackageManager.PERMISSION_GRANTED) {
-            loactionProvider.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-        }
-    }
 
-    private fun stopLocationUpdates(){
-        loactionProvider.removeLocationUpdates(locationCallback)
+    private fun getListOfMeals(){
+        val db = FirebaseFirestore.getInstance()
+        db.collection("meals").addSnapshotListener{ snapshot, error ->
+            if (snapshot != null){
+                meals.clear()
+                for (document in snapshot.documents){
+                    if (document != null){
+                        val meal = document.toObject<Meal>()
+                        if (meal != null){
+                            meals.add(meal)
+                        }
+                    }
+                }
+            }
+            placeListOfMarkers(map)
+        }
     }
 
     override fun onCreateView(
@@ -171,15 +175,4 @@ class MapsFragment : Fragment() {
             parentFragmentManager.popBackStack()
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopLocationUpdates()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        stopLocationUpdates()
-    }
-
 }
