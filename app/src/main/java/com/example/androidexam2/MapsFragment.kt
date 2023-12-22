@@ -1,5 +1,6 @@
 package com.example.androidexam2
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -46,10 +48,32 @@ class MapsFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+          
+        } else  {
+            googleMap.isMyLocationEnabled = true
+        }
+
         googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
         Log.d("!!!", "${meal}")
         val lat = meal?.gpsArray?.get(0)
         val long = meal?.gpsArray?.get(1)
+
         if (lat != null && long != null){
             Log.d("!!!", "$lat & $long")
             val mealLatLng = LatLng(lat, long)
