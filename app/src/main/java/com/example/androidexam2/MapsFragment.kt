@@ -56,7 +56,19 @@ class MapsFragment : Fragment() {
         checkAndRequestPermission(googleMap)
 
         googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
-        Log.d("!!!", "${meal}")
+        if (meal != null){
+            addOneMarker(googleMap)
+        }
+
+
+
+//        val sydney = LatLng(-34.0, 151.0)
+//        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    }
+
+
+    fun addOneMarker(googleMap: GoogleMap){
         val lat = meal?.gpsArray?.get(0)
         val long = meal?.gpsArray?.get(1)
 
@@ -87,16 +99,11 @@ class MapsFragment : Fragment() {
                         val distanceInKm = distance[0]/1000
                         Log.d("!!!", distanceInKm.toString())
                     }
-
                 }
-
             }
         }
-
-//        val sydney = LatLng(-34.0, 151.0)
-//        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-//        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,7 +128,7 @@ class MapsFragment : Fragment() {
 
         arguments?.let {
             meal = it.getSerializable("meal") as Meal?
-            Log.d("!!!", meal.toString())
+
         }
     }
 
@@ -130,8 +137,8 @@ class MapsFragment : Fragment() {
                 requireContext(),
             Manifest.permission.ACCESS_FINE_LOCATION
         ) != PERMISSION_GRANTED) {
-            getLocationAccess.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-            Log.d("!!!", "After Location launch")
+            getLocationAccess.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+
         } else {
             googleMap.isMyLocationEnabled = true
         }
