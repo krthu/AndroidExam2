@@ -3,6 +3,7 @@ package com.example.androidexam2
 import android.Manifest
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.location.Location
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.memoryLruGcSettings
@@ -38,6 +40,7 @@ class MapsFragment : Fragment() {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private lateinit var getLocationAccess: ActivityResultLauncher<String>
+    private lateinit var map: GoogleMap
     private val callback = OnMapReadyCallback { googleMap ->
         /**
          * Manipulates the map once available.
@@ -48,26 +51,8 @@ class MapsFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-          
-        } else  {
-            googleMap.isMyLocationEnabled = true
-        }
+        map = googleMap
+        checkAndRequestPermission(googleMap)
 
         googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
         Log.d("!!!", "${meal}")
@@ -80,8 +65,23 @@ class MapsFragment : Fragment() {
 
             googleMap.addMarker(MarkerOptions().position(mealLatLng).title(meal?.name))
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mealLatLng, zoomLevel))
+            if (map.isMyLocationEnabled){
+                loactionProvider.lastLocation.addOnSuccessListener { location: Location? ->
+                    location?.let {
+                        val userLatLng = LatLng(location.latitude, location.longitude)
+                        val builder = LatLngBounds.Builder()
+                        builder.include(userLatLng)
+                        builder.include(mealLatLng)
 
+                        val bounds = builder.build()
+                        val padding = 100
+                        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                        googleMap.animateCamera(cameraUpdate)
+                    }
 
+                }
+
+            }
         }
 
 //        val sydney = LatLng(-34.0, 151.0)
@@ -105,25 +105,26 @@ class MapsFragment : Fragment() {
         }
         getLocationAccess = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted){
-                startLocationUpdate()
+                Log.d("!!!", "We have permission")
+                map.isMyLocationEnabled = true
             }
         }
-        checkAndRequestPermission()
+
         arguments?.let {
             meal = it.getSerializable("meal") as Meal?
             Log.d("!!!", meal.toString())
         }
     }
 
-    private fun checkAndRequestPermission(){
+    private fun checkAndRequestPermission(googleMap: GoogleMap){
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-            android.Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION
         ) != PERMISSION_GRANTED) {
             getLocationAccess.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
             Log.d("!!!", "After Location launch")
         } else {
-            startLocationUpdate()
+            googleMap.isMyLocationEnabled = true
         }
     }
     private fun startLocationUpdate() {
