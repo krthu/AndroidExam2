@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.Button
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -57,7 +58,8 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        createMealFloatingActionButton = view.findViewById(R.id.createMealButtonFloatingActionButton)
+        createMealFloatingActionButton =
+            view.findViewById(R.id.createMealButtonFloatingActionButton)
         view.findViewById<Button>(R.id.profileButton).setOnClickListener {
             // TODO: Fixa intent för fragment
             val signupFragment = SignUpFragment()
@@ -95,7 +97,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         //createPlaceButton = findViewById<Button>(R.id.createPlaceButton)
 
 //        val auth = Firebase.auth
-          //      auth.signOut()
+        //      auth.signOut()
 //        if (auth.currentUser != null){
 //            createPlaceButton.isVisible = true
 //        }
@@ -114,6 +116,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 
     override fun onResume() {
         super.onResume()
+        activity?.supportFragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         if (auth.currentUser != null) {
             createMealFloatingActionButton.isVisible = true
         }
@@ -149,7 +152,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 
     }
 
-    fun startTransaction(bundle: Bundle){
+    fun startTransaction(bundle: Bundle) {
         val detailsFragment = DetailsFragment()
         detailsFragment.arguments = bundle
         val transaction = parentFragmentManager.beginTransaction()

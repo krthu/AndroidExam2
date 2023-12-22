@@ -1,5 +1,6 @@
 package com.example.androidexam2
 
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -36,7 +37,7 @@ class DetailsFragment : Fragment() {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
-            meal = it.getSerializable("meal" ) as Meal?
+            meal = it.getSerializable("meal") as Meal?
             val uriString = it.getString("uri")
             uri = Uri.parse(uriString)
 
@@ -56,8 +57,10 @@ class DetailsFragment : Fragment() {
         val detailsImageView = view.findViewById<ImageView>(R.id.detailsImage)
         val descriptionTextView = view.findViewById<TextView>(R.id.detailsDescriptionTextView)
         val headerTextView = view.findViewById<TextView>(R.id.detailsHeaderTextView)
-        val backButton = view.findViewById<FloatingActionButton>(R.id.detailsBackFloatingActionButton)
+        val backButton =
+            view.findViewById<FloatingActionButton>(R.id.detailsBackFloatingActionButton)
         val creatorTextView = view.findViewById<TextView>(R.id.creatorTextView)
+
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
@@ -71,10 +74,10 @@ class DetailsFragment : Fragment() {
         val db = FirebaseFirestore.getInstance()
 
         val creatorId = meal?.creator
-        if (creatorId != null){
+        if (creatorId != null) {
             db.collection("users").document(creatorId).get()
                 .addOnSuccessListener { document ->
-                    if (document != null){
+                    if (document != null) {
                         val creator = document.toObject<User>()
                         Log.d("!!!", document.toString())
                         creatorTextView.text = creator?.userName
@@ -82,9 +85,23 @@ class DetailsFragment : Fragment() {
                 }
 
 
-
+        }
+        val locationImageView = view.findViewById<ImageView>(R.id.detailsLocationImageView)
+        locationImageView.setOnClickListener {
+            goToMapsFragment()
         }
 
+    }
+
+    private fun goToMapsFragment(){
+        val bundle = Bundle()
+        bundle.putSerializable("meal", meal)
+        val mapFragment = MapsFragment()
+        mapFragment.arguments = bundle
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.addToBackStack(null)
+        transaction.replace(R.id.fragmentContainer, mapFragment)
+        transaction.commit()
     }
 
     companion object {

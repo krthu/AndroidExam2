@@ -12,11 +12,17 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.storage.FirebaseStorage
-class MealAdapter(val context: Context, val meals: MutableList<Meal>, val listner: onItemClickListner): RecyclerView.Adapter<MealAdapter.ItemViewHolder>() {
-interface onItemClickListner {
-    fun onItemClick(meal: Meal, setUri: Uri?)
-}
-    inner class ItemViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
+
+class MealAdapter(
+    val context: Context,
+    val meals: MutableList<Meal>,
+    val listner: onItemClickListner
+) : RecyclerView.Adapter<MealAdapter.ItemViewHolder>() {
+    interface onItemClickListner {
+        fun onItemClick(meal: Meal, setUri: Uri?)
+    }
+
+    inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mealNameTextView = itemView.findViewById<TextView>(R.id.mealNameTextView)
         val rowMealImageView = itemView.findViewById<ImageView>(R.id.rowMealImageView)
     }
@@ -37,13 +43,14 @@ interface onItemClickListner {
         var setUri: Uri? = null
 
         holder.mealNameTextView.text = meal.name
-        holder.itemView.setOnClickListener{
+        holder.itemView.setOnClickListener {
             //showDetailsDialogFragment(place, setUri)
             //goToDetailsActivity(place, setUri)
             listner.onItemClick(meal, setUri)
         }
 
-        val storageRef = meal.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
+        val storageRef =
+            meal.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
         storageRef?.downloadUrl?.addOnSuccessListener { uri ->
             //holder.rowPlaceImageView.layout(0,0,0,0)
             setUri = uri
