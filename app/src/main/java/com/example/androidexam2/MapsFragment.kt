@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ContentInfoCompat.Flags
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -68,15 +69,23 @@ class MapsFragment : Fragment() {
             if (map.isMyLocationEnabled){
                 loactionProvider.lastLocation.addOnSuccessListener { location: Location? ->
                     location?.let {
+
                         val userLatLng = LatLng(location.latitude, location.longitude)
                         val builder = LatLngBounds.Builder()
                         builder.include(userLatLng)
                         builder.include(mealLatLng)
-
                         val bounds = builder.build()
                         val padding = 100
                         val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
                         googleMap.animateCamera(cameraUpdate)
+
+                        val distance = FloatArray(1)
+                        Location.distanceBetween(
+                            mealLatLng.latitude, mealLatLng.longitude,
+                            userLatLng.latitude, userLatLng.longitude, distance
+                        )
+                        val distanceInKm = distance[0]/1000
+                        Log.d("!!!", distanceInKm.toString())
                     }
 
                 }
