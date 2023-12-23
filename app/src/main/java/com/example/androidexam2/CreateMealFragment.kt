@@ -125,7 +125,7 @@ class CreateMealFragment : Fragment() {
 
     private fun deleteMeal() {
         val db = FirebaseFirestore.getInstance()
-        mealToEdit?.placeId?.let { mealID ->
+        mealToEdit?.mealId?.let { mealID ->
             val documentRef = db.collection("meals").document(mealID)
             documentRef.delete().addOnSuccessListener {
                 mealToEdit?.imageURI?.let { urlToDelete ->
@@ -249,7 +249,7 @@ class CreateMealFragment : Fragment() {
 
             }
         } else {
-            val mealId = mealToEdit!!.placeId
+            val mealId = mealToEdit!!.mealId
             if (mealId != null) {
                 db.collection("meals").document(mealId).set(meal)
                 if (mealToEdit!!.imageURI != meal.imageURI){
