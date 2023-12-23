@@ -61,7 +61,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         createMealFloatingActionButton =
             view.findViewById(R.id.createMealButtonFloatingActionButton)
         view.findViewById<Button>(R.id.profileButton).setOnClickListener {
-            // TODO: Fixa intent för fragment
+
             val signupFragment = SignUpFragment()
             val transaction = parentFragmentManager.beginTransaction()
             transaction.addToBackStack(null)
@@ -102,7 +102,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 //            createPlaceButton.isVisible = true
 //        }
         createMealFloatingActionButton.setOnClickListener {
-            // TODO: Fixa intent för fragment
+
             val createMealFragment = CreateMealFragment()
             val transaction = parentFragmentManager.beginTransaction()
             transaction.addToBackStack(null)

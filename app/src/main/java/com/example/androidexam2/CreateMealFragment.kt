@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.exifinterface.media.ExifInterface
+import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -39,6 +40,7 @@ lateinit var mealNameEditText: EditText
 lateinit var descriptionEditText: EditText
 lateinit var mealImageView: ImageView
 lateinit var gpsTextView: TextView
+
 val PERMISSION_REQUESTCODE = 1
 private lateinit var pickImage: ActivityResultLauncher<String>
 var imageURI: Uri? = null
@@ -53,12 +55,15 @@ class CreateMealFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var mealToEdit: Meal? = null
+    private val auth = Firebase.auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+            mealToEdit = it.getSerializable("meal") as Meal
         }
     }
 
@@ -73,11 +78,13 @@ class CreateMealFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         publishedSwitch = view.findViewById(R.id.publishedSwitch)
         mealNameEditText = view.findViewById(R.id.mealNameEditText)
         descriptionEditText = view.findViewById(R.id.descriptionEditText)
         mealImageView = view.findViewById(R.id.mealImageView)
         gpsTextView = view.findViewById(R.id.gpsTextView)
+        val deleteButton = view.findViewById<Button>(R.id.deleteButton)
         view.findViewById<Button>(R.id.addLocationButton).setOnClickListener {
             // intent = Intent(this, AddLocationActivity::class.java)
             // startActivity(intent)
@@ -104,7 +111,33 @@ class CreateMealFragment : Fragment() {
         mealImageView.setOnClickListener {
             checkAndRequestPermission()
         }
+        if (mealToEdit != null && mealToEdit!!.creator == auth.currentUser?.uid){
+            deleteButton.visibility = View.VISIBLE
+            setMealValuesToViews()
+        }
 
+
+
+
+    }
+
+    private fun setMealValuesToViews(){
+        mealNameEditText.setText(mealToEdit?.name)
+        descriptionEditText.setText(mealToEdit?.description)
+        val storage = FirebaseStorage.getInstance()
+        if (mealToEdit?.gpsArray?.size != 0){
+            setGpsTextView(mealToEdit?.gpsArray)
+        }
+
+        val storageRef = mealToEdit?.imageURI?.let { url ->
+            storage.getReferenceFromUrl(url) }
+        storageRef?.downloadUrl?.addOnSuccessListener { uri ->
+            Glide.with(requireContext())
+                .load(uri)
+                .centerCrop()
+                .placeholder(R.drawable.baseline_question_mark_24)
+                .into(mealImageView)
+        }
     }
 
     private fun startGallery() {
@@ -138,19 +171,24 @@ class CreateMealFragment : Fragment() {
             mealImageView.setImageURI(imageURI)
             //val coordinates = getGPSFromUri()
             val coordinates = getGPSFromUri()
-
+            gpsArray.clear()
+            gpsTextView.text = ""
             if (coordinates != null) {
                 gpsArray.add(coordinates[0])
                 gpsArray.add(coordinates[1])
-                val formatLat = String.format("%.5f", gpsArray[0])
-                val formatLong = String.format("%.5f", gpsArray[1])
-                gpsTextView.text = "Lat: $formatLat Long: $formatLong"
+                setGpsTextView(gpsArray)
             }
 
             if (coordinates != null) {
                 Log.d("!!!", "Lat = ${coordinates[0]} Long = ${coordinates[1]}")
             }
         }
+    }
+
+    private fun setGpsTextView(listOfGPS: MutableList<Double>?){
+        val formatLat = String.format("%.5f", listOfGPS?.get(0))
+        val formatLong = String.format("%.5f", listOfGPS?.get(1))
+        gpsTextView.text = "Lat: $formatLat Long: $formatLong"
     }
 
     private fun getGPSFromUri(): DoubleArray? {
@@ -178,7 +216,6 @@ class CreateMealFragment : Fragment() {
             Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
-        val auth = Firebase.auth
         val meal = Meal(
             name = name,
             description = description,
@@ -187,10 +224,33 @@ class CreateMealFragment : Fragment() {
             imageURI = storageRef.toString(),
             gpsArray = gpsArray
         )
-
         val db = FirebaseFirestore.getInstance()
-        db.collection("meals").add(meal).addOnSuccessListener {
-            parentFragmentManager.popBackStack()
+        if (mealToEdit == null) {
+            db.collection("meals").add(meal).addOnSuccessListener {
+
+            }
+        } else {
+            val mealId = mealToEdit!!.placeId
+            if (mealId != null) {
+                db.collection("meals").document(mealId).set(meal)
+                if (mealToEdit!!.imageURI != meal.imageURI){
+                    deleteImageFromStorage(mealToEdit!!.imageURI)
+                }
+            }
+
+        }
+        parentFragmentManager.popBackStack()
+
+    }
+
+    private fun deleteImageFromStorage(urlToDelete: String?) {
+        if (urlToDelete != null){
+            val filename = urlToDelete.substringAfterLast("/")
+            val storage = FirebaseStorage.getInstance()
+            val storageRef = storage.reference.child("images/$filename")
+            storageRef.delete().addOnSuccessListener {
+                Log.d("!!!", "deleted")
+            }
         }
     }
 
@@ -205,6 +265,10 @@ class CreateMealFragment : Fragment() {
         } else {
             Toast.makeText(requireContext(), "Please select a image", Toast.LENGTH_SHORT).show()
         }
+
+    }
+
+    private fun getValuesToUpdate(){
 
     }
 
