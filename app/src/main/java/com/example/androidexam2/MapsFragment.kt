@@ -1,16 +1,12 @@
 package com.example.androidexam2
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Location
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
-import android.view.GestureDetector
-import android.view.GestureDetector.OnDoubleTapListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +16,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,12 +24,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
-import kotlin.math.ln
 
 
 class MapsFragment : Fragment() {
@@ -68,7 +61,7 @@ class MapsFragment : Fragment() {
             if (lat != null && lng != null){
                 val latLng = LatLng(lat, lng)
                 val marker = googleMap.addMarker(MarkerOptions().position(latLng).title(meal.name))
-                marker?.tag = meal.placeId
+                marker?.tag = meal.mealId
             }
         }
         googleMap.setOnMarkerClickListener { marker ->

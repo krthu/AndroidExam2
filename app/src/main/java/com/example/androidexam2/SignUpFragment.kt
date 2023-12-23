@@ -53,7 +53,7 @@ class SignUpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        auth = Firebase.auth
         passwordEditText = view.findViewById(R.id.passwordEditText)
         userNameEditText = view.findViewById(R.id.userNameEditText)
         emailEditText = view.findViewById(R.id.emailEditText)
@@ -69,7 +69,7 @@ class SignUpFragment : Fragment() {
                 parentFragmentManager.popBackStack()
             }
 
-        auth = Firebase.auth
+
     }
 
     private fun signUp() {
@@ -140,7 +140,11 @@ class SignUpFragment : Fragment() {
                     if (signIn.isSuccessful) {
                         parentFragmentManager.popBackStack()
                     }
+                    else {
+                        Toast.makeText(requireContext(), "Not logged in ", Toast.LENGTH_SHORT).show()
+                    }
                 }
+
         }
     }
 

@@ -10,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 
@@ -54,12 +56,21 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val auth = FirebaseAuth.getInstance()
         val detailsImageView = view.findViewById<ImageView>(R.id.detailsImage)
         val descriptionTextView = view.findViewById<TextView>(R.id.detailsDescriptionTextView)
         val headerTextView = view.findViewById<TextView>(R.id.detailsHeaderTextView)
         val backButton =
             view.findViewById<FloatingActionButton>(R.id.detailsBackFloatingActionButton)
         val creatorTextView = view.findViewById<TextView>(R.id.creatorTextView)
+        val editImageView = view.findViewById<ImageView>(R.id.detailsEditImageView)
+        val editImageBackground = view.findViewById<View>(R.id.detailsEditIconBackground)
+
+        editImageView. isVisible = auth.currentUser?.uid == meal?.creator
+        editImageBackground. isVisible = auth.currentUser?.uid == meal?.creator
+
+        editImageView.setOnClickListener { gotToCreateFragment() }
+        editImageBackground.setOnClickListener{ gotToCreateFragment()}
 
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack()
@@ -93,14 +104,30 @@ class DetailsFragment : Fragment() {
 
     }
 
+
+
+
+    private fun gotToCreateFragment(){
+        val bundle = Bundle()
+        bundle.putSerializable("meal", meal)
+        val createMealFragment = CreateMealFragment()
+        createMealFragment.arguments = bundle
+        changeFragment(createMealFragment)
+
+    }
+
     private fun goToMapsFragment(){
         val bundle = Bundle()
         bundle.putSerializable("meal", meal)
         val mapFragment = MapsFragment()
         mapFragment.arguments = bundle
+        changeFragment(mapFragment)
+    }
+
+    private fun changeFragment(fragment: Fragment){
         val transaction = parentFragmentManager.beginTransaction()
         transaction.addToBackStack(null)
-        transaction.replace(R.id.fragmentContainer, mapFragment)
+        transaction.replace(R.id.fragmentContainer, fragment)
         transaction.commit()
     }
 

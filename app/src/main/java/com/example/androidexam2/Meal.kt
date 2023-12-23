@@ -4,7 +4,7 @@ import com.google.firebase.firestore.DocumentId
 import java.io.Serializable
 
 data class Meal(
-    @DocumentId var placeId: String? = null,
+    @DocumentId var mealId: String? = null,
     var name: String? = null,
     var description: String? = null,
     var creator: String? = null,
