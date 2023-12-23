@@ -103,6 +103,12 @@ class CreateMealFragment : Fragment() {
             saveImageToStorage()
         }
 
+        deleteButton.setOnClickListener {
+            if (mealToEdit?.creator == auth.currentUser?.uid){
+                deleteMeal()
+            }
+        }
+
         view.findViewById<FloatingActionButton>(R.id.backCreatMealFloatingActionButton)
             .setOnClickListener {
                 parentFragmentManager.popBackStack()
@@ -115,7 +121,20 @@ class CreateMealFragment : Fragment() {
             deleteButton.visibility = View.VISIBLE
             setMealValuesToViews()
         }
+    }
 
+    private fun deleteMeal() {
+        val db = FirebaseFirestore.getInstance()
+        mealToEdit?.placeId?.let { mealID ->
+            val documentRef = db.collection("meals").document(mealID)
+            documentRef.delete().addOnSuccessListener {
+                mealToEdit?.imageURI?.let { urlToDelete ->
+                    deleteImageFromStorage(urlToDelete)
+                }
+
+            }
+            parentFragmentManager.popBackStack()
+        }
 
 
 
@@ -268,7 +287,7 @@ class CreateMealFragment : Fragment() {
 
     }
 
-   
+
 
 
     companion object {
