@@ -3,6 +3,7 @@ package com.example.androidexam2
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ class MealAdapter(
 ) : RecyclerView.Adapter<MealAdapter.ItemViewHolder>() {
     interface onItemClickListner {
         fun onItemClick(meal: Meal, setUri: Uri?)
+        fun onEditItemClick(meal: Meal)
     }
 
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -49,7 +51,7 @@ class MealAdapter(
 
         holder.editImageView.isVisible = meal.creator == auth.currentUser?.uid
         holder.editImageView.setOnClickListener {
-            goToEdit(meal)
+            listner.onEditItemClick(meal)
         }
 
         holder.mealNameTextView.text = meal.name
@@ -81,8 +83,12 @@ class MealAdapter(
         dialogFragment.show(fragmentManager, "DetailsFragment")
     }
 
-    private fun goToEdit(meal: Meal){
-
-    }
+//    private fun goToEdit(meal: Meal){
+//        val bundle = Bundle()
+//        bundle.putSerializable("meal", meal)
+//        val detailsFragment = DetailsFragment()
+//        detailsFragment.arguments = bundle
+//        val transaction =
+//    }
 
 }

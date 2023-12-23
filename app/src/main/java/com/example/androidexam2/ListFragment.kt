@@ -148,16 +148,24 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         bundle.putSerializable("meal", meal)
 
         bundle.putString("uri", setUri.toString())
-        startTransaction(bundle)
+        val detailsFragment = DetailsFragment()
+        startTransaction(bundle, detailsFragment)
 
     }
 
-    fun startTransaction(bundle: Bundle) {
-        val detailsFragment = DetailsFragment()
-        detailsFragment.arguments = bundle
+    override fun onEditItemClick(meal: Meal) {
+        val bundle = Bundle()
+        bundle.putSerializable("meal", meal)
+        val createMealFragment = CreateMealFragment()
+        startTransaction(bundle, createMealFragment)
+    }
+
+    fun startTransaction(bundle: Bundle, fragment: Fragment) {
+
+        fragment.arguments = bundle
         val transaction = parentFragmentManager.beginTransaction()
         transaction.addToBackStack(null)
-        transaction.replace(R.id.fragmentContainer, detailsFragment)
+        transaction.replace(R.id.fragmentContainer, fragment)
         transaction.commit()
     }
 
