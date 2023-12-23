@@ -268,9 +268,7 @@ class CreateMealFragment : Fragment() {
 
     }
 
-    private fun getValuesToUpdate(){
-
-    }
+   
 
 
     companion object {
