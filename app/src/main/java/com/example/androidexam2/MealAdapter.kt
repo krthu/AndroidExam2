@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 
 class MealAdapter(
@@ -25,6 +27,8 @@ class MealAdapter(
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mealNameTextView = itemView.findViewById<TextView>(R.id.mealNameTextView)
         val rowMealImageView = itemView.findViewById<ImageView>(R.id.rowMealImageView)
+        val editImageView = itemView.findViewById<ImageView>(R.id.rowItemEditImageView)
+
     }
 
     val inflater = LayoutInflater.from(context)
@@ -39,8 +43,14 @@ class MealAdapter(
     override fun getItemCount() = meals.size
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        val auth = FirebaseAuth.getInstance()
         val meal = meals[position]
         var setUri: Uri? = null
+
+        holder.editImageView.isVisible = meal.creator == auth.currentUser?.uid
+        holder.editImageView.setOnClickListener {
+            goToEdit(meal)
+        }
 
         holder.mealNameTextView.text = meal.name
         holder.itemView.setOnClickListener {
@@ -69,6 +79,10 @@ class MealAdapter(
         val fragmentManager = (context as FragmentActivity).supportFragmentManager
         val dialogFragment = DetailsDialogFragment(meal, setUri)
         dialogFragment.show(fragmentManager, "DetailsFragment")
+    }
+
+    private fun goToEdit(meal: Meal){
+
     }
 
 }
