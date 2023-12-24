@@ -12,5 +12,5 @@
     <string name="title_activity_add_location">AddLocationActivity</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="sing_up_question">Sing up?</string>
+    <string name="sing_up_question">Sign up?</string>
 </resources>

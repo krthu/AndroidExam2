@@ -43,6 +43,11 @@ class UserFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<Button>(R.id.signOutButton). setOnClickListener {
             val auth = FirebaseAuth.getInstance()
+            val activity = requireActivity()
+            if (activity is MainActivity){
+                activity.onLogOut()
+            }
+
             auth.signOut()
         }
 

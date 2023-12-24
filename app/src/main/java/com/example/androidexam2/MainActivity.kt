@@ -20,11 +20,12 @@ class MainActivity : AppCompatActivity(){
 
     lateinit var fragmentContainer: FrameLayout
     lateinit var bottomNavigationView: BottomNavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
-
+        val auth = FirebaseAuth.getInstance()
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
         loadFragment(ListFragment(), false)
@@ -42,9 +43,17 @@ class MainActivity : AppCompatActivity(){
                 }
 
                 R.id.item_3 -> {
-                    val userFragment = UserFragment()
-                    loadFragment(userFragment, false)
-                    true
+                    if (auth.currentUser != null){
+                        val userFragment = UserFragment()
+                        loadFragment(userFragment, false)
+                        true
+                    }
+                    else{
+                        val dialogFragment = SignInDialogFragment()
+                        dialogFragment.show(supportFragmentManager, "signIn")
+
+                        false
+                    }
                 }
 
                 else -> {
@@ -85,11 +94,16 @@ class MainActivity : AppCompatActivity(){
             db.collection("users").document(uid).get().addOnSuccessListener {document ->
             if (document != null){
                 val user = document.toObject<User>()
-                Log.d("!!!", "User ${user?.userName} Loged in: From Activity")
+                bottomNavigationView.menu.findItem(R.id.item_3).title = user?.userName
+
             } }
 
 
         }
+    }
+
+    fun onLogOut(){
+        bottomNavigationView.menu.findItem(R.id.item_3).title = "User"
     }
 
 }

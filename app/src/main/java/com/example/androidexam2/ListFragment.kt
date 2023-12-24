@@ -51,7 +51,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
 
@@ -64,15 +64,9 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 
         view.findViewById<Button>(R.id.profileButton).setOnClickListener {
             val dialogFragment = SignInDialogFragment()
-           // dialogFragment.setLoginListener(this)
+
             dialogFragment.show(requireActivity().supportFragmentManager, "SignIn")
-//            val signupFragment = SignUpFragment()
-//            val transaction = parentFragmentManager.beginTransaction()
-//            transaction.addToBackStack(null)
-//            transaction.replace(R.id.fragmentContainer, signupFragment)
-//            transaction.commit()
-//            val intent = Intent(this, SignUpActivity::class.java)
-//            startActivity(intent)
+
         }
 
 
@@ -98,40 +92,33 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
             }
             adapter.notifyDataSetChanged()
         }
-        //createPlaceButton = findViewById<Button>(R.id.createPlaceButton)
 
-//        val auth = Firebase.auth
-      //        auth.signOut()
-//        if (auth.currentUser != null){
-//            createPlaceButton.isVisible = true
-//        }
         createMealFloatingActionButton.setOnClickListener {
+            if (auth.currentUser == null){
+                val dialogFragment = SignInDialogFragment()
+                dialogFragment.show(requireActivity().supportFragmentManager, "signIn")
 
-            val createMealFragment = CreateMealFragment()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.addToBackStack(null)
-            transaction.replace(R.id.fragmentContainer, createMealFragment)
-            transaction.commit()
-//            val intent = Intent(this, CreateMealActivity::class.java)
-//            startActivity(intent)
+
+            } else {
+                goToCreateMealFragment()
+            }
+
         }
 
+    }
+
+    fun goToCreateMealFragment(){
+        val createMealFragment = CreateMealFragment()
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.addToBackStack(null)
+        transaction.replace(R.id.fragmentContainer, createMealFragment)
+        transaction.commit()
     }
 
     override fun onResume() {
         super.onResume()
         activity?.supportFragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        if (auth.currentUser != null) {
-            createMealFloatingActionButton.isVisible = true
-        }
-    }
 
-    override fun onStart() {
-        super.onStart()
-
-        if (auth.currentUser != null) {
-            createMealFloatingActionButton.isVisible = true
-        }
     }
 
 
