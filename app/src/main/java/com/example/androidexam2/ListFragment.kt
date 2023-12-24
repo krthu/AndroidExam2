@@ -64,7 +64,8 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 
         view.findViewById<Button>(R.id.profileButton).setOnClickListener {
             val dialogFragment = SignInDialogFragment()
-            dialogFragment.show(parentFragmentManager, "SignIn")
+           // dialogFragment.setLoginListener(this)
+            dialogFragment.show(requireActivity().supportFragmentManager, "SignIn")
 //            val signupFragment = SignUpFragment()
 //            val transaction = parentFragmentManager.beginTransaction()
 //            transaction.addToBackStack(null)
@@ -120,6 +121,14 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
     override fun onResume() {
         super.onResume()
         activity?.supportFragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        if (auth.currentUser != null) {
+            createMealFloatingActionButton.isVisible = true
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
         if (auth.currentUser != null) {
             createMealFloatingActionButton.isVisible = true
         }

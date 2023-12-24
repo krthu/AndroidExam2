@@ -11,9 +11,12 @@ import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
 
     lateinit var fragmentContainer: FrameLayout
     lateinit var bottomNavigationView: BottomNavigationView
@@ -72,6 +75,21 @@ class MainActivity : AppCompatActivity() {
         }
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.commit()
+    }
+
+    fun onLoginSuccess() {
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            db.collection("users").document(uid).get().addOnSuccessListener {document ->
+            if (document != null){
+                val user = document.toObject<User>()
+                Log.d("!!!", "User ${user?.userName} Loged in: From Activity")
+            } }
+
+
+        }
     }
 
 }
