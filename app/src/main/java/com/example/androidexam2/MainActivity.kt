@@ -20,15 +20,18 @@ class MainActivity : AppCompatActivity(){
 
     lateinit var fragmentContainer: FrameLayout
     lateinit var bottomNavigationView: BottomNavigationView
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
-        val auth = FirebaseAuth.getInstance()
+
+
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
         loadFragment(ListFragment(), false)
+        setUserNameInMenu()
         bottomNavigationView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.item_1 -> {
@@ -87,16 +90,20 @@ class MainActivity : AppCompatActivity(){
     }
 
     fun onLoginSuccess() {
-        val auth = FirebaseAuth.getInstance()
+        setUserNameInMenu()
+    }
+
+    fun setUserNameInMenu(){
+       // val auth = FirebaseAuth.getInstance()
         val db = FirebaseFirestore.getInstance()
         val uid = auth.currentUser?.uid
         if (uid != null) {
             db.collection("users").document(uid).get().addOnSuccessListener {document ->
-            if (document != null){
-                val user = document.toObject<User>()
-                bottomNavigationView.menu.findItem(R.id.item_3).title = user?.userName
+                if (document != null){
+                    val user = document.toObject<User>()
+                    bottomNavigationView.menu.findItem(R.id.item_3).title = user?.userName
 
-            } }
+                } }
 
 
         }

@@ -65,21 +65,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
 
-    <TextView
-        android:id="@+id/canceTextView"
+    <Button
+        android:id="@+id/cancelButton"
+        style="?attr/materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:text="@android:string/cancel"
-        app:layout_constraintBottom_toBottomOf="@+id/dialogFragmentSignInButton"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/dialogFragmentSignInButton" />
 
-    <TextView
+    <Button
         android:id="@+id/signUpTextView"
+        style="@style/Widget.Material3.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="10dp"
         android:text="@string/sing_up_question"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />

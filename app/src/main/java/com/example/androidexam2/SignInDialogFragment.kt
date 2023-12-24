@@ -26,7 +26,7 @@ class SignInDialogFragment(): DialogFragment() {
         val view = inflater.inflate(R.layout.signin_dialog_fragment, null)
         val emailEditText = view.findViewById<EditText>(R.id.mailInputTextView)
         val passwordEditText = view.findViewById<EditText>(R.id.passwordInputTexttView)
-        val cancelTextView = view.findViewById<TextView>(R.id.canceTextView)
+        val cancelButton = view.findViewById<Button>(R.id.cancelButton)
         val signUpTextView = view.findViewById<TextView>(R.id.signUpTextView)
 
 
@@ -47,7 +47,7 @@ class SignInDialogFragment(): DialogFragment() {
                 Toast.makeText(requireContext(), "Email or password missing", Toast.LENGTH_SHORT).show()
             }
         }
-        cancelTextView.setOnClickListener{
+        cancelButton.setOnClickListener{
             dismiss()
         }
 
