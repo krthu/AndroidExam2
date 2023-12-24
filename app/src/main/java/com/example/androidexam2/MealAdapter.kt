@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -27,7 +28,7 @@ class MealAdapter(
     inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mealNameTextView = itemView.findViewById<TextView>(R.id.mealNameTextView)
         val rowMealImageView = itemView.findViewById<ImageView>(R.id.rowMealImageView)
-        val editImageView = itemView.findViewById<ImageView>(R.id.rowItemEditImageView)
+        val editButton = itemView.findViewById<Button>(R.id.rowItemEditButton)
 
     }
 
@@ -47,8 +48,8 @@ class MealAdapter(
         val meal = meals[position]
         var setUri: Uri? = null
 
-        holder.editImageView.isVisible = meal.creator == auth.currentUser?.uid
-        holder.editImageView.setOnClickListener {
+        holder.editButton.isVisible = meal.creator == auth.currentUser?.uid
+        holder.editButton.setOnClickListener {
             listner.onEditItemClick(meal)
         }
 

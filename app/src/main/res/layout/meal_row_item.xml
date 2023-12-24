@@ -55,16 +55,20 @@
                     app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <ImageView
-                android:id="@+id/rowItemEditImageView"
+            <Button
+                android:id="@+id/rowItemEditButton"
+                style="?attr/materialIconButtonFilledTonalStyle"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:visibility="invisible"
+                android:visibility="visible"
+                android:alpha="0.8"
+                android:text="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/baseline_edit_24" />
+                app:icon="@drawable/baseline_edit_24"
+                app:iconGravity="textStart"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

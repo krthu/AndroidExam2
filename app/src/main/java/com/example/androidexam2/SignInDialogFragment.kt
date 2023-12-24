@@ -27,7 +27,7 @@ class SignInDialogFragment(): DialogFragment() {
         val emailEditText = view.findViewById<EditText>(R.id.mailInputTextView)
         val passwordEditText = view.findViewById<EditText>(R.id.passwordInputTexttView)
         val cancelButton = view.findViewById<Button>(R.id.cancelButton)
-        val signUpTextView = view.findViewById<TextView>(R.id.signUpTextView)
+        val signUpButton = view.findViewById<Button>(R.id.signUpButton)
 
 
         view.findViewById<Button>(R.id.dialogFragmentSignInButton).setOnClickListener {
@@ -51,7 +51,7 @@ class SignInDialogFragment(): DialogFragment() {
             dismiss()
         }
 
-        signUpTextView.setOnClickListener{
+        signUpButton.setOnClickListener{
 
             val signUpFragment = SignUpFragment()
             val transaction = parentFragmentManager.beginTransaction()
