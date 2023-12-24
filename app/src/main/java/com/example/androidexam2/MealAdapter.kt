@@ -1,9 +1,7 @@
 package com.example.androidexam2
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,11 +75,11 @@ class MealAdapter(
 
     }
 
-    private fun showDetailsDialogFragment(meal: Meal, setUri: Uri?) {
-        val fragmentManager = (context as FragmentActivity).supportFragmentManager
-        val dialogFragment = DetailsDialogFragment(meal, setUri)
-        dialogFragment.show(fragmentManager, "DetailsFragment")
-    }
+//    private fun showDetailsDialogFragment(meal: Meal, setUri: Uri?) {
+//        val fragmentManager = (context as FragmentActivity).supportFragmentManager
+//        val dialogFragment = SignInDialogFragment(meal, setUri)
+//        dialogFragment.show(fragmentManager, "DetailsFragment")
+//    }
 
 //    private fun goToEdit(meal: Meal){
 //        val bundle = Bundle()

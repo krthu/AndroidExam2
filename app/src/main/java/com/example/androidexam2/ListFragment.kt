@@ -60,13 +60,16 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
 
         createMealFloatingActionButton =
             view.findViewById(R.id.createMealButtonFloatingActionButton)
-        view.findViewById<Button>(R.id.profileButton).setOnClickListener {
 
-            val signupFragment = SignUpFragment()
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.addToBackStack(null)
-            transaction.replace(R.id.fragmentContainer, signupFragment)
-            transaction.commit()
+
+        view.findViewById<Button>(R.id.profileButton).setOnClickListener {
+            val dialogFragment = SignInDialogFragment()
+            dialogFragment.show(parentFragmentManager, "SignIn")
+//            val signupFragment = SignUpFragment()
+//            val transaction = parentFragmentManager.beginTransaction()
+//            transaction.addToBackStack(null)
+//            transaction.replace(R.id.fragmentContainer, signupFragment)
+//            transaction.commit()
 //            val intent = Intent(this, SignUpActivity::class.java)
 //            startActivity(intent)
         }
