@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.item_3 -> {
-                    intent = Intent(this, AddLocationActivity::class.java)
-                    startActivity(intent)
+                    val userFragment = UserFragment()
+                    loadFragment(userFragment, false)
                     true
                 }
 
