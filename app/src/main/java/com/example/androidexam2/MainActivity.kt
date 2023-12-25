@@ -11,20 +11,27 @@ import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
 
     lateinit var fragmentContainer: FrameLayout
     lateinit var bottomNavigationView: BottomNavigationView
+    private val auth = FirebaseAuth.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
 
+
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
         loadFragment(ListFragment(), false)
+        setUserNameInMenu()
         bottomNavigationView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.item_1 -> {
@@ -39,9 +46,17 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.item_3 -> {
-                    intent = Intent(this, AddLocationActivity::class.java)
-                    startActivity(intent)
-                    true
+                    if (auth.currentUser != null){
+                        val userFragment = UserFragment()
+                        loadFragment(userFragment, false)
+                        true
+                    }
+                    else{
+                        val dialogFragment = SignInDialogFragment()
+                        dialogFragment.show(supportFragmentManager, "signIn")
+
+                        false
+                    }
                 }
 
                 else -> {
@@ -72,6 +87,30 @@ class MainActivity : AppCompatActivity() {
         }
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.commit()
+    }
+
+    fun onLoginSuccess() {
+        setUserNameInMenu()
+    }
+
+    fun setUserNameInMenu(){
+       // val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+        val uid = auth.currentUser?.uid
+        if (uid != null) {
+            db.collection("users").document(uid).get().addOnSuccessListener {document ->
+                if (document != null){
+                    val user = document.toObject<User>()
+                    bottomNavigationView.menu.findItem(R.id.item_3).title = user?.userName
+
+                } }
+
+
+        }
+    }
+
+    fun onLogOut(){
+        bottomNavigationView.menu.findItem(R.id.item_3).title = "User"
     }
 
 }
