@@ -108,11 +108,19 @@ class SignUpFragment : Fragment() {
                         val db = FirebaseFirestore.getInstance()
 //                    db.collection("users").add(user)
                         user.userId?.let { db.collection("users").document(it).set(user) }
+                        notifyLoginSuccess()
                         parentFragmentManager.popBackStack()
                     } else {
                         Log.d("!!!", "User not created ${signup.exception}")
                     }
                 }
+        }
+    }
+
+    private fun notifyLoginSuccess(){
+        val activity = requireActivity()
+        if (activity is MainActivity){
+            activity.onLoginSuccess()
         }
     }
 
