@@ -34,31 +34,35 @@ import java.util.UUID
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-lateinit var publishedSwitch: Switch
-lateinit var mealNameEditText: EditText
-lateinit var descriptionEditText: EditText
-lateinit var mealImageView: ImageView
-lateinit var gpsTextView: TextView
-
-val PERMISSION_REQUESTCODE = 1
-private lateinit var pickImage: ActivityResultLauncher<String>
-var imageURI: Uri? = null
-var gpsArray = mutableListOf<Double>()
 
 /**
  * A simple [Fragment] subclass.
  * Use the [CreateMealFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CreateMealFragment : Fragment() {
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+class CreateMealFragment : Fragment(), SmallMapFragment.MapClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var mealToEdit: Meal? = null
     private val auth = Firebase.auth
+
+
+
+    lateinit var publishedSwitch: Switch
+    lateinit var mealNameEditText: EditText
+    lateinit var descriptionEditText: EditText
+    lateinit var mealImageView: ImageView
+    lateinit var gpsTextView: TextView
+
+    val PERMISSION_REQUESTCODE = 1
+    private lateinit var pickImage: ActivityResultLauncher<String>
+    var imageURI: Uri? = null
+    var gpsArray = mutableListOf<Double>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -197,17 +201,18 @@ class CreateMealFragment : Fragment() {
             gpsArray.clear()
             gpsTextView.text = ""
             if (coordinates != null) {
-                gpsArray.add(coordinates[0])
-                gpsArray.add(coordinates[1])
-                setGpsTextView(gpsArray)
+                updateGpsInfo(coordinates[0], coordinates[1])
                 setSmallMapFragment(coordinates[0], coordinates[1])
-
             }
 
-            if (coordinates != null) {
-                Log.d("!!!", "Lat = ${coordinates[0]} Long = ${coordinates[1]}")
-            }
         }
+    }
+
+    private fun updateGpsInfo(latitude: Double, longitude: Double){
+        gpsArray.clear()
+        gpsArray.add(latitude)
+        gpsArray.add(longitude)
+        setGpsTextView(gpsArray)
     }
 
     private fun setSmallMapFragment(lat: Double, lng: Double){
@@ -247,9 +252,9 @@ class CreateMealFragment : Fragment() {
         val name = mealNameEditText.text.toString()
         val description = descriptionEditText.text.toString()
         val published = publishedSwitch.isChecked
-        Log.d("!!!", "Inside SavePlace")
+
         if (name.isEmpty() || description.isEmpty()) {
-            Log.d("!!!", "Inside failed Toast ")
+
             Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
             return
         }
@@ -305,6 +310,10 @@ class CreateMealFragment : Fragment() {
 
     }
 
+    override fun onMapClick(latitude: Double, longitude: Double) {
+        updateGpsInfo(latitude, longitude)
+    }
+
 
 
 
@@ -327,4 +336,6 @@ class CreateMealFragment : Fragment() {
                 }
             }
     }
+
+
 }

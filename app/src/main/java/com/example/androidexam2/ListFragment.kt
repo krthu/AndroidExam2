@@ -111,7 +111,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         val createMealFragment = CreateMealFragment()
         val transaction = parentFragmentManager.beginTransaction()
         transaction.addToBackStack(null)
-        transaction.replace(R.id.fragmentContainer, createMealFragment)
+        transaction.replace(R.id.fragmentContainer, createMealFragment, "createMealFragment")
         transaction.commit()
     }
 
