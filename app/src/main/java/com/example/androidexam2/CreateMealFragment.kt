@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
@@ -22,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.exifinterface.media.ExifInterface
 import com.bumptech.glide.Glide
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -121,6 +123,8 @@ class CreateMealFragment : Fragment() {
             deleteButton.visibility = View.VISIBLE
             setMealValuesToViews()
         }
+
+
     }
 
     private fun deleteMeal() {
@@ -196,12 +200,26 @@ class CreateMealFragment : Fragment() {
                 gpsArray.add(coordinates[0])
                 gpsArray.add(coordinates[1])
                 setGpsTextView(gpsArray)
+                setSmallMapFragment(coordinates[0], coordinates[1])
+
             }
 
             if (coordinates != null) {
                 Log.d("!!!", "Lat = ${coordinates[0]} Long = ${coordinates[1]}")
             }
         }
+    }
+
+    private fun setSmallMapFragment(lat: Double, lng: Double){
+        val smallMapFragment = SmallMapFragment()
+        val bundle = Bundle()
+        bundle.putDouble("lat", lat)
+        bundle.putDouble("lng", lng)
+        smallMapFragment.arguments = bundle
+
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.replace(R.id.smallMapFragmentContainer, smallMapFragment)
+        transaction.commit()
     }
 
     private fun setGpsTextView(listOfGPS: MutableList<Double>?){

@@ -3,19 +3,22 @@ package com.example.androidexam2
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 class SmallMapFragment : Fragment() {
-
+    private var gpsPoint = mutableListOf<Double>()
     private val callback = OnMapReadyCallback { googleMap ->
+        Log.d("!!!", "From Smallmapfragment ${gpsPoint?.get(0)}, ${gpsPoint?.get(1)}")
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -25,9 +28,14 @@ class SmallMapFragment : Fragment() {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val marker = LatLng(gpsPoint[0], gpsPoint[1])
+        googleMap.addMarker(MarkerOptions().position(marker).title("Marker"))
+        val cameraUpdate = CameraUpdateFactory.newLatLngZoom( marker, 15.0f)
+        googleMap.animateCamera(cameraUpdate)
+        googleMap.uiSettings.isScrollGesturesEnabled = false
+        googleMap.uiSettings.isZoomGesturesEnabled = false
+        googleMap.uiSettings.isRotateGesturesEnabled = false
+        googleMap.uiSettings.isTiltGesturesEnabled = false
     }
 
     override fun onCreateView(
@@ -35,11 +43,18 @@ class SmallMapFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_small_map, container, false)
+
+        val view = inflater.inflate(R.layout.fragment_small_map, container, false)
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        arguments?.let {
+            gpsPoint.add(it.getDouble("lat"))
+            gpsPoint.add(it.getDouble("lng"))
+        }
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
