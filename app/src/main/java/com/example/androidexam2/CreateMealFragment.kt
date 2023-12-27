@@ -43,7 +43,7 @@ import java.util.UUID
  */
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-class CreateMealFragment : Fragment(), SmallMapFragment.MapClickListener {
+class CreateMealFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -157,6 +157,8 @@ class CreateMealFragment : Fragment(), SmallMapFragment.MapClickListener {
         if (gpsArray.isNotEmpty()){
             setGpsTextView(gpsArray)
             setSmallMapFragment(gpsArray[0], gpsArray[1])
+        } else{
+            setSmallMapFragment(null, null)
         }
 
 
@@ -218,6 +220,8 @@ class CreateMealFragment : Fragment(), SmallMapFragment.MapClickListener {
             if (coordinates != null) {
                 updateGpsInfo(coordinates[0], coordinates[1])
                 setSmallMapFragment(coordinates[0], coordinates[1])
+            }else{
+                setSmallMapFragment(null, null)
             }
 
         }
@@ -230,13 +234,14 @@ class CreateMealFragment : Fragment(), SmallMapFragment.MapClickListener {
         setGpsTextView(gpsArray)
     }
 
-    private fun setSmallMapFragment(lat: Double, lng: Double){
+    private fun setSmallMapFragment(lat: Double?, lng: Double?){
         val smallMapFragment = SmallMapFragment()
         val bundle = Bundle()
-        bundle.putDouble("lat", lat)
-        bundle.putDouble("lng", lng)
-        smallMapFragment.arguments = bundle
-
+        if (lat != null && lng != null){
+            bundle.putDouble("lat", lat)
+            bundle.putDouble("lng", lng)
+            smallMapFragment.arguments = bundle
+        }
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.smallMapFragmentContainer, smallMapFragment)
         transaction.commit()
@@ -331,7 +336,7 @@ class CreateMealFragment : Fragment(), SmallMapFragment.MapClickListener {
 
     }
 
-    override fun onMapClick(latitude: Double, longitude: Double) {
+    fun onMapClick(latitude: Double, longitude: Double) {
         updateGpsInfo(latitude, longitude)
     }
 

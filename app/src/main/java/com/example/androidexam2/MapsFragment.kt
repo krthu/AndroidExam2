@@ -56,12 +56,14 @@ class MapsFragment : Fragment() {
 
     private fun placeListOfMarkers(googleMap: GoogleMap) {
         for (meal in meals){
-            val lat = meal.gpsArray?.get(0)
-            val lng = meal.gpsArray?.get(1)
-            if (lat != null && lng != null){
-                val latLng = LatLng(lat, lng)
-                val marker = googleMap.addMarker(MarkerOptions().position(latLng).title(meal.name))
-                marker?.tag = meal.mealId
+            if (meal.gpsArray?.size != 0) {
+                val lat = meal.gpsArray?.get(0)
+                val lng = meal.gpsArray?.get(1)
+                if (lat != null && lng != null){
+                    val latLng = LatLng(lat, lng)
+                    val marker = googleMap.addMarker(MarkerOptions().position(latLng).title(meal.name))
+                    marker?.tag = meal.mealId
+                }
             }
         }
         googleMap.setOnMarkerClickListener { marker ->
