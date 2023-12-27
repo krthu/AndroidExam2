@@ -43,13 +43,13 @@ import java.util.UUID
  */
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+
 class CreateMealFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var mealToEdit: Meal? = null
     private val auth = Firebase.auth
-
 
 
     lateinit var publishedSwitch: Switch
@@ -110,7 +110,7 @@ class CreateMealFragment : Fragment() {
         }
 
         deleteButton.setOnClickListener {
-            if (mealToEdit?.creator == auth.currentUser?.uid){
+            if (mealToEdit?.creator == auth.currentUser?.uid) {
                 deleteMeal()
             }
         }
@@ -123,7 +123,7 @@ class CreateMealFragment : Fragment() {
         mealImageView.setOnClickListener {
             checkAndRequestPermission()
         }
-        if (mealToEdit != null && mealToEdit!!.creator == auth.currentUser?.uid){
+        if (mealToEdit != null && mealToEdit!!.creator == auth.currentUser?.uid) {
             deleteButton.visibility = View.VISIBLE
             setMealValuesToViews()
         }
@@ -145,23 +145,20 @@ class CreateMealFragment : Fragment() {
         }
 
 
-
     }
 
-    private fun setMealValuesToViews(){
+    private fun setMealValuesToViews() {
         mealNameEditText.setText(mealToEdit?.name)
         descriptionEditText.setText(mealToEdit?.description)
         val storage = FirebaseStorage.getInstance()
 
         gpsArray = mealToEdit?.gpsArray ?: mutableListOf()
-        if (gpsArray.isNotEmpty()){
+        if (gpsArray.isNotEmpty()) {
             setGpsTextView(gpsArray)
             setSmallMapFragment(gpsArray[0], gpsArray[1])
-        } else{
+        } else {
             setSmallMapFragment(null, null)
         }
-
-
 
 
 //        if (mealToEdit?.gpsArray?.size != 0){
@@ -173,7 +170,8 @@ class CreateMealFragment : Fragment() {
 //        }
 
         val storageRef = mealToEdit?.imageURI?.let { url ->
-            storage.getReferenceFromUrl(url) }
+            storage.getReferenceFromUrl(url)
+        }
         storageRef?.downloadUrl?.addOnSuccessListener { uri ->
             Glide.with(requireContext())
                 .load(uri)
@@ -220,24 +218,24 @@ class CreateMealFragment : Fragment() {
             if (coordinates != null) {
                 updateGpsInfo(coordinates[0], coordinates[1])
                 setSmallMapFragment(coordinates[0], coordinates[1])
-            }else{
+            } else {
                 setSmallMapFragment(null, null)
             }
 
         }
     }
 
-    private fun updateGpsInfo(latitude: Double, longitude: Double){
+    private fun updateGpsInfo(latitude: Double, longitude: Double) {
         gpsArray.clear()
         gpsArray.add(latitude)
         gpsArray.add(longitude)
         setGpsTextView(gpsArray)
     }
 
-    private fun setSmallMapFragment(lat: Double?, lng: Double?){
+    private fun setSmallMapFragment(lat: Double?, lng: Double?) {
         val smallMapFragment = SmallMapFragment()
         val bundle = Bundle()
-        if (lat != null && lng != null){
+        if (lat != null && lng != null) {
             bundle.putDouble("lat", lat)
             bundle.putDouble("lng", lng)
             smallMapFragment.arguments = bundle
@@ -247,7 +245,7 @@ class CreateMealFragment : Fragment() {
         transaction.commit()
     }
 
-    private fun setGpsTextView(listOfGPS: MutableList<Double>?){
+    private fun setGpsTextView(listOfGPS: MutableList<Double>?) {
         val formatLat = String.format("%.5f", listOfGPS?.get(0))
         val formatLong = String.format("%.5f", listOfGPS?.get(1))
         gpsTextView.text = "Lat: $formatLat Long: $formatLong"
@@ -294,7 +292,7 @@ class CreateMealFragment : Fragment() {
             val mealId = mealToEdit!!.mealId
             if (mealId != null) {
                 db.collection("meals").document(mealId).set(meal)
-                if (mealToEdit!!.imageURI != meal.imageURI){
+                if (mealToEdit!!.imageURI != meal.imageURI) {
                     deleteImageFromStorage(mealToEdit!!.imageURI)
                 }
             }
@@ -305,7 +303,7 @@ class CreateMealFragment : Fragment() {
     }
 
     private fun deleteImageFromStorage(urlToDelete: String?) {
-        if (urlToDelete != null){
+        if (urlToDelete != null) {
             val filename = urlToDelete.substringAfterLast("/")
             val storage = FirebaseStorage.getInstance()
             val storageRef = storage.reference.child("images/$filename")
@@ -317,7 +315,7 @@ class CreateMealFragment : Fragment() {
 
     private fun saveImageToStorage() {
         if (imageURI != null) {
-            if (mealToEdit != null){
+            if (mealToEdit != null) {
                 deleteImageFromStorage(mealToEdit!!.imageURI)
             }
             val storageRef =
@@ -326,10 +324,10 @@ class CreateMealFragment : Fragment() {
                 ?.addOnSuccessListener {
                     savePlace(storageRef.toString())
                 }
-        } else if (mealToEdit != null){
+        } else if (mealToEdit != null) {
             mealToEdit!!.imageURI?.let { savePlace(it) }
 
-        } else{
+        } else {
             Toast.makeText(requireContext(), "Please select a image", Toast.LENGTH_SHORT).show()
 
         }
@@ -339,8 +337,6 @@ class CreateMealFragment : Fragment() {
     fun onMapClick(latitude: Double, longitude: Double) {
         updateGpsInfo(latitude, longitude)
     }
-
-
 
 
     companion object {

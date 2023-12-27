@@ -46,7 +46,7 @@ class MapsFragment : Fragment() {
         checkAndRequestPermission(googleMap)
 
         googleMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
-        if (chosenMeal != null){
+        if (chosenMeal != null) {
             addOneMarker(googleMap)
         } else {
             Log.d("!!!", "We have no null chosenMeal")
@@ -55,13 +55,14 @@ class MapsFragment : Fragment() {
     }
 
     private fun placeListOfMarkers(googleMap: GoogleMap) {
-        for (meal in meals){
+        for (meal in meals) {
             if (meal.gpsArray?.size != 0) {
                 val lat = meal.gpsArray?.get(0)
                 val lng = meal.gpsArray?.get(1)
-                if (lat != null && lng != null){
+                if (lat != null && lng != null) {
                     val latLng = LatLng(lat, lng)
-                    val marker = googleMap.addMarker(MarkerOptions().position(latLng).title(meal.name))
+                    val marker =
+                        googleMap.addMarker(MarkerOptions().position(latLng).title(meal.name))
                     marker?.tag = meal.mealId
                 }
             }
@@ -72,17 +73,17 @@ class MapsFragment : Fragment() {
         }
     }
 
-    fun addOneMarker(googleMap: GoogleMap){
+    fun addOneMarker(googleMap: GoogleMap) {
         val lat = chosenMeal?.gpsArray?.get(0)
         val long = chosenMeal?.gpsArray?.get(1)
 
-        if (lat != null && long != null){
+        if (lat != null && long != null) {
             Log.d("!!!", "$lat & $long")
             val mealLatLng = LatLng(lat, long)
 
             googleMap.addMarker(MarkerOptions().position(mealLatLng).title(chosenMeal?.name))
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mealLatLng, zoomLevel))
-            if (map.isMyLocationEnabled){
+            if (map.isMyLocationEnabled) {
                 loactionProvider.lastLocation.addOnSuccessListener { location: Location? ->
                     location?.let {
 
@@ -100,7 +101,7 @@ class MapsFragment : Fragment() {
                             mealLatLng.latitude, mealLatLng.longitude,
                             userLatLng.latitude, userLatLng.longitude, distance
                         )
-                        val distanceInKm = distance[0]/1000
+                        val distanceInKm = distance[0] / 1000
                         Log.d("!!!", distanceInKm.toString())
                     }
                 }
@@ -112,38 +113,40 @@ class MapsFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         loactionProvider = LocationServices.getFusedLocationProviderClient(requireContext())
-        getLocationAccess = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted){
-                Log.d("!!!", "We have permission")
-                map.isMyLocationEnabled = true
+        getLocationAccess =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    Log.d("!!!", "We have permission")
+                    map.isMyLocationEnabled = true
+                }
             }
-        }
 
         arguments?.let {
             chosenMeal = it.getSerializable("meal") as Meal?
         }
     }
 
-    private fun checkAndRequestPermission(googleMap: GoogleMap){
+    private fun checkAndRequestPermission(googleMap: GoogleMap) {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PERMISSION_GRANTED) {
+            ) != PERMISSION_GRANTED
+        ) {
             getLocationAccess.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         } else {
             googleMap.isMyLocationEnabled = true
         }
     }
 
-    private fun getListOfMeals(){
+    private fun getListOfMeals() {
         val db = FirebaseFirestore.getInstance()
-        db.collection("meals").addSnapshotListener{ snapshot, error ->
-            if (snapshot != null){
+        db.collection("meals").addSnapshotListener { snapshot, error ->
+            if (snapshot != null) {
                 meals.clear()
-                for (document in snapshot.documents){
-                    if (document != null){
+                for (document in snapshot.documents) {
+                    if (document != null) {
                         val meal = document.toObject<Meal>()
-                        if (meal != null){
+                        if (meal != null) {
                             meals.add(meal)
                         }
                     }
@@ -165,7 +168,8 @@ class MapsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-        val mapsBackButton = view.findViewById<FloatingActionButton>(R.id.mapsBackFloatingActionButton)
+        val mapsBackButton =
+            view.findViewById<FloatingActionButton>(R.id.mapsBackFloatingActionButton)
         mapsBackButton.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
