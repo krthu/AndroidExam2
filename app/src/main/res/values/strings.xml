@@ -5,12 +5,9 @@
     <string name="passwordEmpty">Password is empty</string>
     <string name="sign_up">Sign up</string>
     <string name="password">Password</string>
-    <string name="e_mail">E-mail</string>
-    <string name="user_name">User name</string>
     <string name="sign_in">Sign in</string>
     <string name="save">Save</string>
     <string name="title_activity_add_location">AddLocationActivity</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sing_up_question">Sign up?</string>
 </resources>

@@ -73,7 +73,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         val adapter = MealAdapter(requireContext(), meals, this)
         val recycler = view.findViewById<RecyclerView>(R.id.mealRecyclerView)
         recycler.setHasFixedSize(true)
-        recycler.layoutManager = GridLayoutManager(requireContext(), 2)
+        recycler.layoutManager = GridLayoutManager(requireContext(), 1)
         recycler.adapter = adapter
         auth = Firebase.auth
 
