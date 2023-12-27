@@ -111,7 +111,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         val createMealFragment = CreateMealFragment()
         val transaction = parentFragmentManager.beginTransaction()
         transaction.addToBackStack(null)
-        transaction.replace(R.id.fragmentContainer, createMealFragment)
+        transaction.replace(R.id.fragmentContainer, createMealFragment, "createMealFragment")
         transaction.commit()
     }
 
@@ -164,7 +164,11 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         fragment.arguments = bundle
         val transaction = parentFragmentManager.beginTransaction()
         transaction.addToBackStack(null)
-        transaction.replace(R.id.fragmentContainer, fragment)
+        if (fragment is CreateMealFragment){
+            transaction.replace(R.id.fragmentContainer, fragment, "createMealFragment")
+        } else{
+            transaction.replace(R.id.fragmentContainer, fragment)
+        }
         transaction.commit()
     }
 
