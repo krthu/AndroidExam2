@@ -14,34 +14,35 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowLongClickListener
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
     private val REQUEST_LOCATION = 2
     private var chosenMeal: Meal? = null
     private val meals = mutableListOf<Meal>()
     private val zoomLevel = 13.0f
-    private lateinit var loactionProvider: FusedLocationProviderClient
-    private lateinit var locationRequest: LocationRequest
-    private lateinit var locationCallback: LocationCallback
+    private lateinit var locationProvider: FusedLocationProviderClient
     private lateinit var getLocationAccess: ActivityResultLauncher<String>
     private lateinit var map: GoogleMap
 
     private val callback = OnMapReadyCallback { googleMap ->
+
+        val customMapInfoWindowAdapter = CustomMapInfoWindowAdapter(requireContext())
+        //googleMap.setInfoWindowAdapter(customMapInfoWindowAdapter)
         map = googleMap
         checkAndRequestPermission(googleMap)
 
@@ -52,6 +53,7 @@ class MapsFragment : Fragment() {
 
             getListOfMeals()
         }
+        googleMap.setOnInfoWindowClickListener(this)
     }
 
     private fun placeListOfMarkers(googleMap: GoogleMap) {
@@ -63,20 +65,16 @@ class MapsFragment : Fragment() {
                     val latLng = LatLng(lat, lng)
                     val marker =
                         googleMap.addMarker(MarkerOptions().position(latLng).title(meal.name))
-                    marker?.tag = meal.mealId
+                    marker?.tag = meal
                 }
             }
-        }
-        googleMap.setOnMarkerClickListener { marker ->
-            val markerName = marker.title
-            false
         }
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PERMISSION_GRANTED
         ) {
-            loactionProvider.lastLocation.addOnSuccessListener { location ->
+            locationProvider.lastLocation.addOnSuccessListener { location ->
                 val userLatLng = LatLng(location.latitude, location.longitude)
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, zoomLevel))
             }
@@ -92,10 +90,12 @@ class MapsFragment : Fragment() {
             Log.d("!!!", "$lat & $long")
             val mealLatLng = LatLng(lat, long)
 
-            googleMap.addMarker(MarkerOptions().position(mealLatLng).title(chosenMeal?.name))
+
+            val marker = googleMap.addMarker(MarkerOptions().position(mealLatLng).title(chosenMeal?.name))
+            marker?.tag = chosenMeal
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mealLatLng, zoomLevel))
             if (map.isMyLocationEnabled) {
-                loactionProvider.lastLocation.addOnSuccessListener { location: Location? ->
+                locationProvider.lastLocation.addOnSuccessListener { location: Location? ->
                     location?.let {
 
                         val userLatLng = LatLng(location.latitude, location.longitude)
@@ -123,7 +123,7 @@ class MapsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loactionProvider = LocationServices.getFusedLocationProviderClient(requireContext())
+        locationProvider = LocationServices.getFusedLocationProviderClient(requireContext())
         getLocationAccess =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
@@ -135,6 +135,7 @@ class MapsFragment : Fragment() {
         arguments?.let {
             chosenMeal = it.getSerializable("meal") as Meal?
         }
+
     }
 
     private fun checkAndRequestPermission(googleMap: GoogleMap) {
@@ -185,4 +186,21 @@ class MapsFragment : Fragment() {
             parentFragmentManager.popBackStack()
         }
     }
+
+    override fun onInfoWindowClick(marker: Marker) {
+        val detailsFragment = DetailsFragment()
+        val bundle = Bundle()
+        val markerMeal = marker.tag as? Meal
+        if (markerMeal != null){
+            bundle.putSerializable("meal", markerMeal)
+            detailsFragment.arguments = bundle
+        }
+        Log.d("!!!", "${markerMeal?.name.toString()} Från window clicked")
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.addToBackStack(null)
+        transaction.replace(R.id.fragmentContainer, detailsFragment)
+        transaction.commit()
+    }
+
+
 }
