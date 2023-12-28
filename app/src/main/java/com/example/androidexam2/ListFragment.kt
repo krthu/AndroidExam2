@@ -62,12 +62,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
             view.findViewById(R.id.createMealButtonFloatingActionButton)
 
 
-        view.findViewById<Button>(R.id.profileButton).setOnClickListener {
-            val dialogFragment = SignInDialogFragment()
 
-            dialogFragment.show(requireActivity().supportFragmentManager, "SignIn")
-
-        }
 
 
         val adapter = MealAdapter(requireContext(), meals, this)
