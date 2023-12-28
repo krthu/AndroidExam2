@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-
+    <style name="FAB_Style" parent="Widget.Design.FloatingActionButton">
+        <item name="android:backgroundTint">@color/secondary</item>
+        <item name="android:tint">@color/primary</item>
+       <!-- <item name="android:elevation">@dimen/your_fab_elevation</item> -->
+        <!-- Lägg till andra attribut som du vill anpassa här -->
+    </style>
 
 </resources>
