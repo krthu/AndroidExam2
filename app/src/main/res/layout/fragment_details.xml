@@ -31,9 +31,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/bebas_neue_regular"
             android:text="TextView"
-            android:textSize="36sp"
+            android:textSize="50sp"
+            android:letterSpacing="0.05"
+            android:lineHeight="40dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,8 +44,9 @@
             android:id="@+id/detailsDescriptionTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="30dp"
+            android:fontFamily="@font/montserrat_light"
             android:text="TextView"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:fontFamily="@font/montserrat_bold"
             android:layout_marginTop="10dp"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +74,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Location"
@@ -92,6 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        style="@style/FAB_Style"
         android:clickable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -103,6 +108,7 @@
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+
         android:alpha="0.7"
         android:background="@drawable/icon_background"
         android:visibility="invisible"

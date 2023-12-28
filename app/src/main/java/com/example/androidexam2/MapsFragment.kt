@@ -34,7 +34,7 @@ class MapsFragment : Fragment() {
     private val REQUEST_LOCATION = 2
     private var chosenMeal: Meal? = null
     private val meals = mutableListOf<Meal>()
-    private val zoomLevel = 10.0f
+    private val zoomLevel = 13.0f
     private lateinit var loactionProvider: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
@@ -49,7 +49,7 @@ class MapsFragment : Fragment() {
         if (chosenMeal != null) {
             addOneMarker(googleMap)
         } else {
-            Log.d("!!!", "We have no null chosenMeal")
+
             getListOfMeals()
         }
     }
@@ -71,6 +71,17 @@ class MapsFragment : Fragment() {
             val markerName = marker.title
             false
         }
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PERMISSION_GRANTED
+        ) {
+            loactionProvider.lastLocation.addOnSuccessListener { location ->
+                val userLatLng = LatLng(location.latitude, location.longitude)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, zoomLevel))
+            }
+        }
+
     }
 
     fun addOneMarker(googleMap: GoogleMap) {

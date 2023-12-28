@@ -62,18 +62,13 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
             view.findViewById(R.id.createMealButtonFloatingActionButton)
 
 
-        view.findViewById<Button>(R.id.profileButton).setOnClickListener {
-            val dialogFragment = SignInDialogFragment()
 
-            dialogFragment.show(requireActivity().supportFragmentManager, "SignIn")
-
-        }
 
 
         val adapter = MealAdapter(requireContext(), meals, this)
         val recycler = view.findViewById<RecyclerView>(R.id.mealRecyclerView)
         recycler.setHasFixedSize(true)
-        recycler.layoutManager = GridLayoutManager(requireContext(), 2)
+        recycler.layoutManager = GridLayoutManager(requireContext(), 1)
         recycler.adapter = adapter
         auth = Firebase.auth
 

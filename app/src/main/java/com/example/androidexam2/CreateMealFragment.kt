@@ -91,10 +91,7 @@ class CreateMealFragment : Fragment() {
         mealImageView = view.findViewById(R.id.mealImageView)
         gpsTextView = view.findViewById(R.id.gpsTextView)
         val deleteButton = view.findViewById<Button>(R.id.deleteButton)
-        view.findViewById<Button>(R.id.addLocationButton).setOnClickListener {
-            // intent = Intent(this, AddLocationActivity::class.java)
-            // startActivity(intent)
-        }
+
         pickImage =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
