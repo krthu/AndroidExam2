@@ -16,6 +16,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.FirebaseStorage
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,6 +34,7 @@ class DetailsFragment : Fragment() {
     private var param2: String? = null
     private var meal: Meal? = null
     private var uri: Uri? = null
+    private lateinit var detailsImageView: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,8 +43,22 @@ class DetailsFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
             meal = it.getSerializable("meal") as Meal?
             val uriString = it.getString("uri")
-            uri = Uri.parse(uriString)
+            if (uriString != null){
+                uri = Uri.parse(uriString)
+            } else {
+                downloadImage()
+            }
 
+
+        }
+    }
+
+    private fun downloadImage() {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = meal?.imageURI?.let { storage.getReferenceFromUrl(it) }
+        storageRef?.downloadUrl?.addOnSuccessListener { downloadedUri ->
+            uri = downloadedUri
+            setImage()
         }
     }
 
@@ -57,7 +73,7 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val auth = FirebaseAuth.getInstance()
-        val detailsImageView = view.findViewById<ImageView>(R.id.detailsImage)
+        detailsImageView = view.findViewById(R.id.detailsImage)
         val descriptionTextView = view.findViewById<TextView>(R.id.detailsDescriptionTextView)
         val headerTextView = view.findViewById<TextView>(R.id.detailsHeaderTextView)
         val backButton =
@@ -77,10 +93,7 @@ class DetailsFragment : Fragment() {
         }
         descriptionTextView.text = meal?.description
         headerTextView.text = meal?.name
-        Glide.with(this)
-            .load(uri)
-            .centerCrop()
-            .into(detailsImageView)
+        setImage()
 
         val db = FirebaseFirestore.getInstance()
 
@@ -102,6 +115,13 @@ class DetailsFragment : Fragment() {
             goToMapsFragment()
         }
 
+    }
+
+    private fun setImage(){
+        Glide.with(this)
+            .load(uri)
+            .centerCrop()
+            .into(detailsImageView)
     }
 
 
