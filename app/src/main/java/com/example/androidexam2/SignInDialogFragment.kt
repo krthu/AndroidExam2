@@ -42,7 +42,6 @@ class SignInDialogFragment(): DialogFragment() {
             if (email.isNotEmpty() && password.isNotEmpty()){
                 val auth = FirebaseAuth.getInstance()
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
-
                     notifyLoginSuccess()
                     dismiss()
                 }

@@ -1,6 +1,7 @@
 package com.example.androidexam2
 
 import android.os.Bundle
+import android.os.Message
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -59,9 +60,6 @@ class SignUpFragment : Fragment() {
         emailEditText = view.findViewById(R.id.emailEditText)
         view.findViewById<Button>(R.id.signUpButton).setOnClickListener {
             signUp()
-        }
-        view.findViewById<Button>(R.id.signInButton).setOnClickListener {
-            signIn()
         }
 
         view.findViewById<FloatingActionButton>(R.id.backSignUpFloatingActionButton)
@@ -124,38 +122,9 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    fun signIn() {
-        val email = emailEditText.text.toString()
+    private fun showMessage(view: View, message: String){
 
-        val password = passwordEditText.text.toString()
-        if (email.isEmpty() || password.isEmpty()) {
-
-            when {
-                email.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.emailEmpty, Toast.LENGTH_LONG).show()
-                    return
-                }
-
-                password.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.passwordEmpty, Toast.LENGTH_LONG)
-                        .show()
-                    return
-                }
-            }
-        } else {
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener() { signIn ->
-                    if (signIn.isSuccessful) {
-                        parentFragmentManager.popBackStack()
-                    }
-                    else {
-                        Toast.makeText(requireContext(), "Not logged in ", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-        }
     }
-
 
     companion object {
         /**
