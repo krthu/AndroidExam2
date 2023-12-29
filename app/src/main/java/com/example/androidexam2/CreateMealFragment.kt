@@ -203,7 +203,7 @@ class CreateMealFragment : Fragment() {
         if (requestCode == PERMISSION_REQUESTCODE && resultCode == AppCompatActivity.RESULT_OK && data != null) {
             imageURI = data.data
             mealImageView.setImageURI(imageURI)
-            //val coordinates = getGPSFromUri()
+
             val coordinates = getGPSFromUri()
             gpsArray.clear()
             gpsTextView.text = ""

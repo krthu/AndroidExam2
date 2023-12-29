@@ -70,12 +70,14 @@
         style="?attr/materialButtonOutlinedStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginTop="30dp"
 
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:text="@android:string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/dialogFragmentSignInButton" />
+        app:layout_constraintEnd_toStartOf="@+id/dialogFragmentSignInButton"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
 
     <Button
         android:id="@+id/signUpButton"
@@ -87,4 +89,5 @@
         android:text="@string/sing_up_question"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -100,6 +101,15 @@ class MainActivity : AppCompatActivity(){
     }
 
     fun onLoginSuccess() {
+        Snackbar.make(this, fragmentContainer, "Signed in", Snackbar.LENGTH_SHORT).setAnchorView(fragmentContainer.findViewById(R.id.createMealButtonFloatingActionButton)).apply {
+            setAction("Dismiss") {
+                dismiss()
+            }
+        }.show()
+
+
+
+
         setUserNameInMenu()
     }
 
