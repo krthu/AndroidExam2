@@ -11,7 +11,7 @@
     <string name="email_formatted_badly">Email is not correct formatted</string>
     <string name="email_in_use">Email is already used</string>
     <string name="wrong_password_or_email">Wrong email or password</string>
-    <string name="weak_password">Weak password. At least 6 characters</string>
+    <string name="weak_password">At least 6 characters for password</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sing_up_question">Sign up?</string>
 </resources>
