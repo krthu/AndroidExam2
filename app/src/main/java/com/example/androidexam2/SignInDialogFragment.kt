@@ -6,14 +6,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -36,15 +39,15 @@ class SignInDialogFragment(): DialogFragment() {
             if (email.isNotEmpty() && password.isNotEmpty()){
                 val auth = FirebaseAuth.getInstance()
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Signed In", Toast.LENGTH_SHORT).show()
                     notifyLoginSuccess()
                     dismiss()
                 }
                     .addOnFailureListener{e ->
-                        Toast.makeText(requireContext(), "Invalid credentials!", Toast.LENGTH_SHORT).show()
+
+                        showErrorMessage(cancelButton, "Invalid credentials!")
                     }
             } else {
-                Toast.makeText(requireContext(), "Email or password missing", Toast.LENGTH_SHORT).show()
+                showErrorMessage(cancelButton, "Email or password missing")
             }
         }
         cancelButton.setOnClickListener{
@@ -67,6 +70,14 @@ class SignInDialogFragment(): DialogFragment() {
         builder.setView(view)
 
         return builder.create()
+    }
+
+    private fun showErrorMessage(view: View, message: String) {
+        Snackbar.make(requireContext(), view, message, Snackbar.LENGTH_SHORT).setAnchorView(view).apply {
+            setAction("Dismiss") {
+                dismiss()
+            }
+        }.show()
     }
 
     // If i should navigate to new fragment after finished logging in perhaps use this

@@ -12,24 +12,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.exifinterface.media.ExifInterface
 import com.bumptech.glide.Glide
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import java.util.UUID
 
 // TODO: Rename parameter arguments, choose names that match
@@ -57,6 +54,7 @@ class CreateMealFragment : Fragment() {
     lateinit var descriptionEditText: EditText
     lateinit var mealImageView: ImageView
     lateinit var gpsTextView: TextView
+    lateinit var saveButton: Button
 
     val PERMISSION_REQUESTCODE = 1
     private lateinit var pickImage: ActivityResultLauncher<String>
@@ -102,8 +100,13 @@ class CreateMealFragment : Fragment() {
                 }
 
             }
-        view.findViewById<Button>(R.id.saveMealButton).setOnClickListener {
-            saveImageToStorage()
+        saveButton = view.findViewById<Button>(R.id.saveMealButton)
+        saveButton.setOnClickListener {
+            if (mealNameEditText.text.isEmpty() || descriptionEditText.text.isEmpty()) {
+                Snackbar.make(requireContext(), saveButton, "Please fill in all fields", Snackbar.LENGTH_SHORT).setAnchorView(saveButton).show()
+            } else{
+                saveImageToStorage()
+            }
         }
 
         deleteButton.setOnClickListener {
@@ -158,14 +161,6 @@ class CreateMealFragment : Fragment() {
         }
 
 
-//        if (mealToEdit?.gpsArray?.size != 0){
-//            if (mealToEdit?.gpsArray != null){
-//                gpsArray.add(mealToEdit!!.gpsArray!!.get(0))
-//            }
-//            setGpsTextView(mealToEdit?.gpsArray)
-//            setSmallMapFragment(gpsArray[0], gpsArray[1])
-//        }
-
         val storageRef = mealToEdit?.imageURI?.let { url ->
             storage.getReferenceFromUrl(url)
         }
@@ -208,7 +203,7 @@ class CreateMealFragment : Fragment() {
         if (requestCode == PERMISSION_REQUESTCODE && resultCode == AppCompatActivity.RESULT_OK && data != null) {
             imageURI = data.data
             mealImageView.setImageURI(imageURI)
-            //val coordinates = getGPSFromUri()
+
             val coordinates = getGPSFromUri()
             gpsArray.clear()
             gpsTextView.text = ""
@@ -268,10 +263,6 @@ class CreateMealFragment : Fragment() {
         val description = descriptionEditText.text.toString()
         val published = publishedSwitch.isChecked
 
-        if (name.isEmpty() || description.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
-            return
-        }
         val meal = Meal(
             name = name,
             description = description,
@@ -325,7 +316,8 @@ class CreateMealFragment : Fragment() {
             mealToEdit!!.imageURI?.let { savePlace(it) }
 
         } else {
-            Toast.makeText(requireContext(), "Please select a image", Toast.LENGTH_SHORT).show()
+            Snackbar.make(requireContext(), saveButton, "Please select a image", Snackbar.LENGTH_SHORT).setAnchorView(saveButton).show()
+
 
         }
 
