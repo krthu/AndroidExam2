@@ -10,9 +10,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -24,6 +29,7 @@ private const val ARG_PARAM2 = "param2"
 private lateinit var passwordEditText: EditText
 private lateinit var userNameEditText: EditText
 private lateinit var emailEditText: EditText
+private lateinit var snackbarAnchor: CoordinatorLayout
 lateinit var auth: FirebaseAuth
 
 /**
@@ -61,6 +67,7 @@ class SignUpFragment : Fragment() {
         view.findViewById<Button>(R.id.signUpButton).setOnClickListener {
             signUp()
         }
+        snackbarAnchor = view.findViewById(R.id.rootCoordinator)
 
         view.findViewById<FloatingActionButton>(R.id.backSignUpFloatingActionButton)
             .setOnClickListener {
@@ -74,25 +81,24 @@ class SignUpFragment : Fragment() {
         val email = emailEditText.text.toString()
         val userName = userNameEditText.text.toString()
         val password = passwordEditText.text.toString()
+
         Log.d("!!!", "${email.isEmpty()} ${userName.isEmpty()} ${password.isEmpty()}")
 
         if (email.isEmpty() || userName.isEmpty() || password.isEmpty()) {
 
             when {
                 email.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.emailEmpty, Toast.LENGTH_LONG).show()
+                    showMessage(snackbarAnchor, R.string.emailEmpty)
                     return
                 }
 
                 userName.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.userNameEmpty, Toast.LENGTH_LONG)
-                        .show()
+                    showMessage(snackbarAnchor, R.string.userNameEmpty)
                     return
                 }
 
                 password.isEmpty() -> {
-                    Toast.makeText(requireContext(), R.string.passwordEmpty, Toast.LENGTH_LONG)
-                        .show()
+                    showMessage(snackbarAnchor, R.string.passwordEmpty)
                     return
                 }
             }
@@ -109,7 +115,25 @@ class SignUpFragment : Fragment() {
                         notifyLoginSuccess()
                         parentFragmentManager.popBackStack()
                     } else {
-                        Log.d("!!!", "User not created ${signup.exception}")
+                        val errorCode = (signup.exception as FirebaseAuthException).errorCode
+                        //showMessage(snackbarAnchor, error.message)
+                        when (errorCode) {
+                            "ERROR_INVALID_EMAIL" -> {
+                                showMessage(snackbarAnchor, R.string.email_formatted_badly)
+                            }
+                            "ERROR_WEAK_PASSWORD" ->  {
+                                showMessage(snackbarAnchor, R.string.weak_password)
+                            }
+
+                            "ERROR_EMAIL_ALREADY_IN_USE" -> {
+                                showMessage(snackbarAnchor, R.string.email_in_use)
+                            }
+
+                        }
+
+
+                        Log.d("!!!", "User not created ${errorCode}")
+
                     }
                 }
         }
@@ -122,8 +146,22 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    private fun showMessage(view: View, message: String){
+    private fun showMessage(view: View, stringID: Int) {
+        val message = getString(stringID)
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).setAnchorView(snackbarAnchor).apply {
+            setAction("Dismiss") {
+                dismiss()
+            }
+        }.show()
+    }
 
+    private fun showMessage(view: View, message: String?) {
+        //val message = getString(showMessage())
+        Snackbar.make(view, message.toString(), Snackbar.LENGTH_SHORT).setAnchorView(snackbarAnchor).apply {
+            setAction("Dismiss") {
+                dismiss()
+            }
+        }.show()
     }
 
     companion object {

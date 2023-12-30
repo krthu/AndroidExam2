@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity(){
         setUserNameInMenu()
     }
 
-    fun setUserNameInMenu(){
+    private fun setUserNameInMenu(){
 
         val db = FirebaseFirestore.getInstance()
         val uid = auth.currentUser?.uid

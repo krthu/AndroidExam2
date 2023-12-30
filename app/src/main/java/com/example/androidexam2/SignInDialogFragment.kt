@@ -33,9 +33,6 @@ class SignInDialogFragment(): DialogFragment() {
         val signUpTextView = view.findViewById<Button>(R.id.signUpButton)
 
 
-
-
-
         view.findViewById<Button>(R.id.dialogFragmentSignInButton).setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
