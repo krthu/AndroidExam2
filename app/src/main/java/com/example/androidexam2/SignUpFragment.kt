@@ -235,26 +235,9 @@ class SignUpFragment : Fragment() {
         if (userName.isEmpty()){
             showUserNameError()
         }
+        if (!isValidEmail(email) || !isValidPassword(password) || !isValidUserName(userName)){
+            return
 
-        if (email.isEmpty() || userName.isEmpty() || password.isEmpty()) {
-
-            when {
-                email.isEmpty() -> {
-
-                    showMessage(snackbarAnchor, R.string.emailEmpty)
-                    return
-                }
-
-                userName.isEmpty() -> {
-                    showMessage(snackbarAnchor, R.string.userNameEmpty)
-                    return
-                }
-
-                password.isEmpty() -> {
-                    showMessage(snackbarAnchor, R.string.passwordEmpty)
-                    return
-                }
-            }
         } else {
             Log.d("!!!", "Nothing is empty")
             auth.createUserWithEmailAndPassword(email, password)
