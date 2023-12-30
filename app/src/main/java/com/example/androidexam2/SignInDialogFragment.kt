@@ -154,8 +154,6 @@ class SignInDialogFragment(): DialogFragment() {
         }
     }
 
-
-
     private fun signIn(){
         val email = emailEditText.text.toString()
         val password = passwordEditText.text.toString()
