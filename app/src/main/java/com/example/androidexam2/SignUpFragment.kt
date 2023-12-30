@@ -225,17 +225,13 @@ class SignUpFragment : Fragment() {
         val userName = userNameEditText.text.toString()
         val password = passwordEditText.text.toString()
 
-        Log.d("!!!", "${email.isEmpty()} ${userName.isEmpty()} ${password.isEmpty()}")
-        if(!isValidEmail(email)){
-            showMailFormatError()
-        }
-        if (!isValidPassword(password)){
-            showPasswordError()
-        }
-        if (userName.isEmpty()){
-            showUserNameError()
-        }
-        if (!isValidEmail(email) || !isValidPassword(password) || !isValidUserName(userName)){
+        val validEmail = isValidEmail(email)
+        val validPassword = isValidPassword(password)
+        val validUserName = isValidUserName(userName)
+
+        if (!validEmail || !validPassword || !validUserName){
+            isValidPassword(password)
+            isValidUserName(userName)
             return
 
         } else {
