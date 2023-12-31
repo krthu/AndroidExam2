@@ -158,7 +158,7 @@ class DetailsFragment : Fragment() {
     }
 
     private fun startRateDialog(){
-        val rateDialogFragment = RateDialogFragment()
+        val rateDialogFragment = RateDialogFragment(meal)
         rateDialogFragment.show(parentFragmentManager, "RateDialog")
 
     }
