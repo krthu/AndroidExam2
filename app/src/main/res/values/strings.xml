@@ -12,6 +12,8 @@
     <string name="email_in_use">Email is already used</string>
     <string name="wrong_password_or_email">Wrong email or password</string>
     <string name="weak_password">At least 6 characters for password</string>
+    <string name="rate">Rate</string>
+    <string name="cancel">Cancel</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sing_up_question">Sign up?</string>
 </resources>

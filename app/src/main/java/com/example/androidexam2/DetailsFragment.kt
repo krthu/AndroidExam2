@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
@@ -91,6 +92,11 @@ class DetailsFragment : Fragment() {
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack()
         }
+
+        view.findViewById<Button>(R.id.rateButton).setOnClickListener {
+            startRateDialog()
+        }
+
         descriptionTextView.text = meal?.description
         headerTextView.text = meal?.name
         setImage()
@@ -149,6 +155,12 @@ class DetailsFragment : Fragment() {
         transaction.addToBackStack(null)
         transaction.replace(R.id.fragmentContainer, fragment)
         transaction.commit()
+    }
+
+    private fun startRateDialog(){
+        val rateDialogFragment = RateDialogFragment()
+        rateDialogFragment.show(parentFragmentManager, "RateDialog")
+
     }
 
     companion object {

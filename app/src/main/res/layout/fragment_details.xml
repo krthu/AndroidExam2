@@ -58,11 +58,13 @@
 
         <TextView
             android:id="@+id/creatorTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
             android:fontFamily="@font/montserrat_bold"
             android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/detailRatingTextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detailsHeaderTextView" />
 
@@ -77,12 +79,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Location"
             app:layout_constraintEnd_toEndOf="@+id/detailsLocationImageView"
             app:layout_constraintStart_toStartOf="@+id/detailsLocationImageView"
             app:layout_constraintTop_toBottomOf="@+id/detailsLocationImageView" />
+
+        <TextView
+            android:id="@+id/detailRatingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintEnd_toStartOf="@+id/textView2"
+            app:layout_constraintTop_toBottomOf="@+id/detailsHeaderTextView" />
+
+        <Button
+            android:id="@+id/rateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Rate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailsDescriptionTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
