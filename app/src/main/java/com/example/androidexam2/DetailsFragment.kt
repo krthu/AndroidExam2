@@ -1,6 +1,6 @@
 package com.example.androidexam2
 
-import android.media.Image
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -36,6 +37,8 @@ class DetailsFragment : Fragment() {
     private var meal: Meal? = null
     private var uri: Uri? = null
     private lateinit var detailsImageView: ImageView
+    private lateinit var ratingTextView: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,19 +52,10 @@ class DetailsFragment : Fragment() {
             } else {
                 downloadImage()
             }
-
-
         }
     }
 
-    private fun downloadImage() {
-        val storage = FirebaseStorage.getInstance()
-        val storageRef = meal?.imageURI?.let { storage.getReferenceFromUrl(it) }
-        storageRef?.downloadUrl?.addOnSuccessListener { downloadedUri ->
-            uri = downloadedUri
-            setImage()
-        }
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,6 +76,7 @@ class DetailsFragment : Fragment() {
         val creatorTextView = view.findViewById<TextView>(R.id.creatorTextView)
         val editImageView = view.findViewById<ImageView>(R.id.detailsEditImageView)
         val editImageBackground = view.findViewById<View>(R.id.detailsEditIconBackground)
+        ratingTextView = view.findViewById(R.id.detailRatingTextView)
 
         editImageView. isVisible = auth.currentUser?.uid == meal?.creator
         editImageBackground. isVisible = auth.currentUser?.uid == meal?.creator
@@ -94,6 +89,7 @@ class DetailsFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.rateButton).setOnClickListener {
+
             startRateDialog()
         }
 
@@ -120,7 +116,47 @@ class DetailsFragment : Fragment() {
         locationImageView.setOnClickListener {
             goToMapsFragment()
         }
+        val rating = getAverageRating()
+        setRatingTextView(rating)
+        parentFragmentManager.setFragmentResultListener("ratingsBundle", this) { key, bundle ->
+            val newRating = bundle.getDouble("newRating")
+            updateRating(newRating)
+        }
 
+    }
+
+    private fun updateRating(newRating: Double) {
+        // Update the already downloaded meal ratings instead of making another fetch.
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (meal?.ratings == null){
+            meal?.ratings = mutableMapOf()
+        }
+        meal?.ratings?.set(userId, newRating)
+        setRatingTextView(getAverageRating())
+    }
+
+
+
+    private fun setRatingTextView(rating: Double){
+        var ratingString = ""
+        if (rating != 0.0){
+            ratingString = String.format("%.1f", rating)
+        }
+        ratingTextView.text = ratingString
+
+    }
+
+
+    private fun getAverageRating(): Double {
+        var sum = 0.0
+        val ratings = meal?.ratings
+        if (ratings != null){
+            for (rating in ratings){
+                sum += rating.value
+            }
+            return sum/ratings.size
+        }
+        return 0.0
     }
 
     private fun setImage(){
@@ -130,7 +166,14 @@ class DetailsFragment : Fragment() {
             .into(detailsImageView)
     }
 
-
+    private fun downloadImage() {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = meal?.imageURI?.let { storage.getReferenceFromUrl(it) }
+        storageRef?.downloadUrl?.addOnSuccessListener { downloadedUri ->
+            uri = downloadedUri
+            setImage()
+        }
+    }
 
 
     private fun gotToCreateFragment(){
@@ -158,8 +201,10 @@ class DetailsFragment : Fragment() {
     }
 
     private fun startRateDialog(){
+
         val auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null){
+           // signInDialogFragment.parentFragmentManager.setFragmentResultListener()
             val rateDialogFragment = RateDialogFragment(meal)
             rateDialogFragment.show(parentFragmentManager, "rateDialog")
 
@@ -168,6 +213,10 @@ class DetailsFragment : Fragment() {
             signInDialogFragment.show(parentFragmentManager, "signInDialog")
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {

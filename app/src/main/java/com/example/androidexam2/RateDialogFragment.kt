@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.RatingBar
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -29,7 +30,7 @@ class RateDialogFragment(private val meal: Meal?): DialogFragment() {
 
         view.findViewById<Button>(R.id.rateDialogButton).setOnClickListener {
             //Update the rating to the db
-            Log.d("!!!", ratingBar.rating.toString())
+
             saveRating()
 
 
@@ -52,6 +53,9 @@ class RateDialogFragment(private val meal: Meal?): DialogFragment() {
         val rating = ratingBar.rating
         dbRef?.update("ratings.$userId", rating)?.addOnSuccessListener {
             meal?.ratings?.put(userId, rating.toDouble())
+            val bundle = Bundle()
+            bundle.putDouble("newRating", rating.toDouble())
+            setFragmentResult("ratingsBundle", bundle)
             dismiss()
         }
             ?.addOnFailureListener {
