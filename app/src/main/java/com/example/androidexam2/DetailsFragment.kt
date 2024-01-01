@@ -3,6 +3,7 @@ package com.example.androidexam2
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract.CommonDataKinds.Im
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
@@ -38,6 +40,7 @@ class DetailsFragment : Fragment() {
     private var uri: Uri? = null
     private lateinit var detailsImageView: ImageView
     private lateinit var ratingTextView: TextView
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,6 +79,7 @@ class DetailsFragment : Fragment() {
         val creatorTextView = view.findViewById<TextView>(R.id.creatorTextView)
         val editImageView = view.findViewById<ImageView>(R.id.detailsEditImageView)
         val editImageBackground = view.findViewById<View>(R.id.detailsEditIconBackground)
+
         ratingTextView = view.findViewById(R.id.detailRatingTextView)
 
         editImageView. isVisible = auth.currentUser?.uid == meal?.creator
@@ -133,6 +137,7 @@ class DetailsFragment : Fragment() {
         }
         meal?.ratings?.set(userId, newRating)
         setRatingTextView()
+
     }
 
 
@@ -145,8 +150,9 @@ class DetailsFragment : Fragment() {
         }
         ratingTextView.text = ratingString
 
+
     }
-    
+
 
     private fun setImage(){
         Glide.with(this)
