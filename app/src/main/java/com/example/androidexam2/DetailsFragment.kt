@@ -116,8 +116,8 @@ class DetailsFragment : Fragment() {
         locationImageView.setOnClickListener {
             goToMapsFragment()
         }
-        val rating = getAverageRating()
-        setRatingTextView(rating)
+        val rating = meal?.getAverageRating()
+        setRatingTextView()
         parentFragmentManager.setFragmentResultListener("ratingsBundle", this) { key, bundle ->
             val newRating = bundle.getDouble("newRating")
             updateRating(newRating)
@@ -132,12 +132,13 @@ class DetailsFragment : Fragment() {
             meal?.ratings = mutableMapOf()
         }
         meal?.ratings?.set(userId, newRating)
-        setRatingTextView(getAverageRating())
+        setRatingTextView()
     }
 
 
 
-    private fun setRatingTextView(rating: Double){
+    private fun setRatingTextView(){
+        val rating = meal?.getAverageRating()
         var ratingString = ""
         if (rating != 0.0){
             ratingString = String.format("%.1f", rating)
@@ -145,19 +146,7 @@ class DetailsFragment : Fragment() {
         ratingTextView.text = ratingString
 
     }
-
-
-    private fun getAverageRating(): Double {
-        var sum = 0.0
-        val ratings = meal?.ratings
-        if (ratings != null){
-            for (rating in ratings){
-                sum += rating.value
-            }
-            return sum/ratings.size
-        }
-        return 0.0
-    }
+    
 
     private fun setImage(){
         Glide.with(this)

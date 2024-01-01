@@ -29,6 +29,7 @@ class MealAdapter(
         val mealNameTextView = itemView.findViewById<TextView>(R.id.mealNameTextView)
         val rowMealImageView = itemView.findViewById<ImageView>(R.id.rowMealImageView)
         val editButton = itemView.findViewById<Button>(R.id.rowItemEditButton)
+        val rateingView = itemView.findViewById<TextView>(R.id.listRatingTextView)
 
     }
 
@@ -55,10 +56,14 @@ class MealAdapter(
 
         holder.mealNameTextView.text = meal.name
         holder.itemView.setOnClickListener {
-            //showDetailsDialogFragment(place, setUri)
-            //goToDetailsActivity(place, setUri)
+
             listner.onItemClick(meal, setUri)
         }
+        val rating = meal.getAverageRating()
+        if (rating != 0.0){
+            holder.rateingView.text = String.format("%.1f", rating)
+        }
+
 
         val storageRef =
             meal.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
@@ -76,18 +81,5 @@ class MealAdapter(
 
     }
 
-//    private fun showDetailsDialogFragment(meal: Meal, setUri: Uri?) {
-//        val fragmentManager = (context as FragmentActivity).supportFragmentManager
-//        val dialogFragment = SignInDialogFragment(meal, setUri)
-//        dialogFragment.show(fragmentManager, "DetailsFragment")
-//    }
-
-//    private fun goToEdit(meal: Meal){
-//        val bundle = Bundle()
-//        bundle.putSerializable("meal", meal)
-//        val detailsFragment = DetailsFragment()
-//        detailsFragment.arguments = bundle
-//        val transaction =
-//    }
 
 }
