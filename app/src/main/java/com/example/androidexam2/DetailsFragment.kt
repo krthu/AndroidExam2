@@ -158,8 +158,15 @@ class DetailsFragment : Fragment() {
     }
 
     private fun startRateDialog(){
-        val rateDialogFragment = RateDialogFragment(meal)
-        rateDialogFragment.show(parentFragmentManager, "RateDialog")
+        val auth = FirebaseAuth.getInstance()
+        if (auth.currentUser != null){
+            val rateDialogFragment = RateDialogFragment(meal)
+            rateDialogFragment.show(parentFragmentManager, "rateDialog")
+
+        }else{
+            val signInDialogFragment = SignInDialogFragment()
+            signInDialogFragment.show(parentFragmentManager, "signInDialog")
+        }
 
     }
 
