@@ -26,6 +26,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detailsImage">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/starImageContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/detailsDescriptionTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailsHeaderTextView"
+            app:layout_constraintVertical_bias="1.0">
+
+            <TextView
+                android:id="@+id/detailRatingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/starImageView"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:id="@+id/starImageView"
+                android:layout_width="30dp"
+                android:layout_height="36dp"
+                android:src="@drawable/baseline_star_rate_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <TextView
             android:id="@+id/detailsHeaderTextView"
             android:layout_width="0dp"
@@ -35,7 +66,7 @@
             android:layout_marginEnd="20dp"
             android:fontFamily="@font/bebas_neue_regular"
             android:letterSpacing="0.05"
-            android:lineHeight="40dp"
+            android:lineHeight="45dp"
             android:text="TextView"
             android:textSize="50sp"
             app:layout_constraintEnd_toStartOf="@+id/detailsLocationImageView"
@@ -47,7 +78,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
             android:fontFamily="@font/montserrat_light"
             android:text="TextView"
@@ -58,31 +89,43 @@
 
         <TextView
             android:id="@+id/creatorTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:fontFamily="@font/montserrat_bold"
             android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/starImageContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/detailsHeaderTextView" />
 
         <ImageView
             android:id="@+id/detailsLocationImageView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="39dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="30dp"
             android:src="@drawable/baseline_location_on_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/locationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Location"
             app:layout_constraintEnd_toEndOf="@+id/detailsLocationImageView"
             app:layout_constraintStart_toStartOf="@+id/detailsLocationImageView"
             app:layout_constraintTop_toBottomOf="@+id/detailsLocationImageView" />
+
+        <Button
+            android:id="@+id/rateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Rate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailsDescriptionTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

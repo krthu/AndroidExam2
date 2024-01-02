@@ -101,12 +101,13 @@ class MainActivity : AppCompatActivity(){
     }
 
     fun onLoginSuccess() {
-        Snackbar.make(this, fragmentContainer, "Signed in", Snackbar.LENGTH_SHORT).setAnchorView(fragmentContainer.findViewById(R.id.createMealButtonFloatingActionButton)).apply {
+        Snackbar.make(this, fragmentContainer, "Signed in", Snackbar.LENGTH_SHORT)
+            .setAnchorView(fragmentContainer.findViewById(R.id.createMealButtonFloatingActionButton))
+            .apply {
             setAction("Dismiss") {
                 dismiss()
             }
         }.show()
-
         setUserNameInMenu()
     }
 

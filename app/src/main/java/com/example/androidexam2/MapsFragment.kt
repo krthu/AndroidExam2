@@ -95,25 +95,28 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
             marker?.tag = chosenMeal
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mealLatLng, zoomLevel))
             if (map.isMyLocationEnabled) {
-                locationProvider.lastLocation.addOnSuccessListener { location: Location? ->
-                    location?.let {
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_GRANTED) {
+                    locationProvider.lastLocation.addOnSuccessListener { location: Location? ->
+                        location?.let {
 
-                        val userLatLng = LatLng(location.latitude, location.longitude)
-                        val builder = LatLngBounds.Builder()
-                        builder.include(userLatLng)
-                        builder.include(mealLatLng)
-                        val bounds = builder.build()
-                        val padding = 100
-                        val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
-                        googleMap.animateCamera(cameraUpdate)
+                            val userLatLng = LatLng(location.latitude, location.longitude)
+                            val builder = LatLngBounds.Builder()
+                            builder.include(userLatLng)
+                            builder.include(mealLatLng)
+                            val bounds = builder.build()
+                            val padding = 100
+                            val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+                            googleMap.animateCamera(cameraUpdate)
 
-                        val distance = FloatArray(1)
-                        Location.distanceBetween(
-                            mealLatLng.latitude, mealLatLng.longitude,
-                            userLatLng.latitude, userLatLng.longitude, distance
-                        )
-                        val distanceInKm = distance[0] / 1000
-                        Log.d("!!!", distanceInKm.toString())
+                            // Info on distance between
+//                            val distance = FloatArray(1)
+//                            Location.distanceBetween(
+//                                mealLatLng.latitude, mealLatLng.longitude,
+//                                userLatLng.latitude, userLatLng.longitude, distance
+//                            )
+//                            val distanceInKm = distance[0] / 1000
+//                            Log.d("!!!", distanceInKm.toString())
+                        }
                     }
                 }
             }
