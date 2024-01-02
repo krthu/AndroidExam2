@@ -56,7 +56,7 @@ class CreateMealFragment : Fragment() {
     lateinit var gpsTextView: TextView
     lateinit var saveButton: Button
 
-    val PERMISSION_REQUESTCODE = 1
+    private val PERMISSION_REQUESTCODE = 1
     private lateinit var pickImage: ActivityResultLauncher<String>
     var imageURI: Uri? = null
     var gpsArray = mutableListOf<Double>()
@@ -115,7 +115,7 @@ class CreateMealFragment : Fragment() {
             }
         }
 
-        view.findViewById<FloatingActionButton>(R.id.backCreatMealFloatingActionButton)
+        view.findViewById<FloatingActionButton>(R.id.backCreateMealFloatingActionButton)
             .setOnClickListener {
                 parentFragmentManager.popBackStack()
             }
@@ -138,13 +138,11 @@ class CreateMealFragment : Fragment() {
             documentRef.delete().addOnSuccessListener {
                 mealToEdit?.imageURI?.let { urlToDelete ->
                     deleteImageFromStorage(urlToDelete)
+                    showMessage(getString(R.string.itemDeleted))
+                    parentFragmentManager.popBackStack()
                 }
-
             }
-            parentFragmentManager.popBackStack()
         }
-
-
     }
 
     private fun setMealValuesToViews() {
@@ -181,19 +179,16 @@ class CreateMealFragment : Fragment() {
     }
 
     fun checkAndRequestPermission() {
-        Log.d("!!!", "Inside checkPermission")
+
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_MEDIA_IMAGES
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.d("!!!", "Inside Dont have permission")
-
             pickImage.launch(Manifest.permission.READ_MEDIA_IMAGES)
-            Log.d("!!!", "After permission")
+
         } else {
             startGallery()
-            Log.d("!!!", "We have permission")
         }
     }
 
@@ -213,7 +208,6 @@ class CreateMealFragment : Fragment() {
             } else {
                 setSmallMapFragment(null, null)
             }
-
         }
     }
 
@@ -286,8 +280,18 @@ class CreateMealFragment : Fragment() {
             }
 
         }
+        Log.d("!!!", "Snackbar!")
+        showMessage(getString(R.string.itemSaved))
         parentFragmentManager.popBackStack()
 
+    }
+
+    private fun showMessage(message: String){
+        Snackbar.make(requireContext(), saveButton, message, Snackbar.LENGTH_SHORT).setAnchorView(saveButton).apply {
+            setAction("Dismiss") {
+                dismiss()
+            }
+        }.show()
     }
 
     private fun deleteImageFromStorage(urlToDelete: String?) {
@@ -297,6 +301,7 @@ class CreateMealFragment : Fragment() {
             val storageRef = storage.reference.child("images/$filename")
             storageRef.delete().addOnSuccessListener {
                 Log.d("!!!", "deleted")
+
             }
         }
     }
@@ -316,9 +321,7 @@ class CreateMealFragment : Fragment() {
             mealToEdit!!.imageURI?.let { savePlace(it) }
 
         } else {
-            Snackbar.make(requireContext(), saveButton, "Please select a image", Snackbar.LENGTH_SHORT).setAnchorView(saveButton).show()
-
-
+            Snackbar.make(requireContext(), saveButton, getString(R.string.pleaseSelectImage), Snackbar.LENGTH_SHORT).setAnchorView(saveButton).show()
         }
 
     }

@@ -14,6 +14,9 @@
     <string name="weak_password">At least 6 characters for password</string>
     <string name="rate">Rate</string>
     <string name="cancel">Cancel</string>
+    <string name="itemSaved">Item saved</string>
+    <string name="itemDeleted">Item deleted</string>
+    <string name="pleaseSelectImage">Please select a image</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sing_up_question">Sign up?</string>
 </resources>
