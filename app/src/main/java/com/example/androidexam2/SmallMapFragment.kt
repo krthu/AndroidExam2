@@ -24,12 +24,13 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import java.security.Permission
 
 class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
 
 
     private val zoom = 15.0f
-   // private var mapClickListener: MapClickListener? = null
+
     private var gpsPoint = mutableListOf<Double>()
     private var marker: Marker? = null
     private lateinit var googleMap: GoogleMap
@@ -46,7 +47,7 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
          * install it inside the SupportMapFragment. This method will only be triggered once the
          * user has installed Google Play services and returned to the app.
          */
-        //marker = googleMap.addMarker(MarkerOptions())!!
+
         if (gpsPoint != null && gpsPoint.isNotEmpty()){
             val latLng = LatLng(gpsPoint[0], gpsPoint[1])
             if (latLng != null){
@@ -56,7 +57,7 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
                     marker?.position = latLng
                 }
 
-                //marker = googleMap.addMarker(MarkerOptions().position(latLng).title("Marker"))!!
+
                 val cameraUpdate = CameraUpdateFactory.newLatLngZoom( latLng, zoom)
                 googleMap.animateCamera(cameraUpdate)
             }
@@ -64,8 +65,7 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
         else{
             checkAndRequestPermission()
         }
-       // googleMap.uiSettings.isScrollGesturesEnabled = false
-       // googleMap.uiSettings.isZoomGesturesEnabled = false
+
         googleMap.uiSettings.isRotateGesturesEnabled = false
         googleMap.uiSettings.isTiltGesturesEnabled = false
         googleMap.setOnMapClickListener(this)
@@ -84,16 +84,24 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
     }
 
     private fun enableMyLocation() {
-        googleMap.isMyLocationEnabled = true
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            location?.let {
-                val userLatLng = LatLng(it.latitude,it.longitude)
-                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(userLatLng, zoom)
-                marker = googleMap.addMarker(MarkerOptions().position(userLatLng).title("Marker"))!!
-                onMapClick(userLatLng)
-                googleMap.animateCamera(cameraUpdate)
+        if (ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            {
+                googleMap.isMyLocationEnabled = true
+                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    location?.let {
+                        val userLatLng = LatLng(it.latitude,it.longitude)
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(userLatLng, zoom)
+                        marker = googleMap.addMarker(MarkerOptions().position(userLatLng).title("Marker"))!!
+                        onMapClick(userLatLng)
+                        googleMap.animateCamera(cameraUpdate)
+                    }
+                }
+
             }
+        else{
+            Log.d("!!!", "No permission")
         }
 
     }
@@ -102,21 +110,13 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
         super.onCreate(savedInstanceState)
         getLocationAccess = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted){
-                Log.d("!!!", "We have permission")
+
                 enableMyLocation()
             } else{
-                // TODO What to do if we dont have gps and dont have user permission
+
             }
         }
     }
-
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        if (context is MapClickListener){
-//            mapClickListener = context
-//        }
-//
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -135,16 +135,6 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
             gpsPoint.add(it.getDouble("lng"))
         }
 
-//        getLocationAccess = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-//            if (isGranted){
-//                Log.d("!!!", "We have permission")
-//                googleMap.isMyLocationEnabled = true
-//            } else{
-//               // TODO What to do if we dont have gps and dont have user permission
-//            }
-//        }
-
-        //mapClickListener = parentFragment as? MapClickListener
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
     }
