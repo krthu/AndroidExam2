@@ -17,6 +17,7 @@
     <string name="itemSaved">Item saved</string>
     <string name="itemDeleted">Item deleted</string>
     <string name="pleaseSelectImage">Please select a image</string>
+    <string name="imageNotSet">Image not set</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sing_up_question">Sign up?</string>
 </resources>
