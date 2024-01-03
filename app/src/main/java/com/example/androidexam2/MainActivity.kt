@@ -41,7 +41,9 @@ class MainActivity : AppCompatActivity(){
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
-        loadFragment(ListFragment(), false)
+
+        //loadFragment(ListFragment(), false)
+        loadFragment(UserComposeFragment(), false)
         setUserNameInMenu()
         bottomNavigationView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

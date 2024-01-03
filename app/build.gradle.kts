@@ -39,10 +39,18 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
 }
 
 dependencies {
+    implementation ("androidx.activity:activity-compose:1.4.1")
+    implementation ("androidx.compose.ui:ui:1.1.0")
+    implementation ("androidx.compose.material:material:1.1.0")
+    implementation ("androidx.compose.foundation:foundation:1.1.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation ("androidx.fragment:fragment-ktx:1.3.0")
