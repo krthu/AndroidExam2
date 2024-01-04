@@ -5,6 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.content.pm.PackageManager
 import android.Manifest
+import android.content.res.Resources
+import android.content.res.Resources.Theme
+import android.text.style.BackgroundColorSpan
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
@@ -24,8 +27,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -58,6 +66,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.model.Circle
 import com.google.firebase.Firebase
+import com.google.firebase.annotations.concurrent.Background
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -133,7 +142,15 @@ class UserComposeFragment : Fragment() {
                         .padding(5.dp)
                 )
             }
+            logOutButton()
         }
+
+
+    }
+
+    fun goToListFragment(){
+        val listFragment = ListFragment()
+        parentFragmentManager.beginTransaction().replace(R.id.fragmentContainer, listFragment).commit()
     }
 
     private fun getUserFromDB(callback: (User?) -> Unit) {
@@ -142,6 +159,34 @@ class UserComposeFragment : Fragment() {
                 val user = document.toObject<User>()
                 Log.d("!!!", user?.userName.toString())
                 callback.invoke(user)
+            }
+        }
+    }
+
+    @Composable
+    fun logOutButton() {
+        MaterialTheme(
+
+        ){
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = {
+                    val activity = requireActivity()
+                    if (activity is MainActivity){
+                        activity.onLogOut()
+                    }
+                    auth.signOut()
+                    goToListFragment()
+
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(red = 0, green = 32, blue = 63)
+                )
+
+            ) {
+                Text(text = "Log out")
+
             }
         }
     }
@@ -165,6 +210,7 @@ class UserComposeFragment : Fragment() {
                 }
         )
     }
+
 
     fun onProfileClick() {
 
