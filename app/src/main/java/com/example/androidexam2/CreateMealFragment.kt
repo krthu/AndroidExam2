@@ -280,7 +280,7 @@ class CreateMealFragment : Fragment() {
             }
 
         }
- 
+
         showMessage(getString(R.string.itemSaved))
         parentFragmentManager.popBackStack()
 
