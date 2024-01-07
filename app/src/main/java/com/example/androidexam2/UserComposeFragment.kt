@@ -5,12 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.content.pm.PackageManager
 import android.Manifest
+import android.content.Intent
 import android.content.res.Resources
 import android.content.res.Resources.Theme
 import android.text.style.BackgroundColorSpan
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -51,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -77,6 +80,14 @@ class UserComposeFragment : Fragment() {
     val auth = FirebaseAuth.getInstance()
     val db = FirebaseFirestore.getInstance()
     val userID = auth.currentUser?.uid
+    private val permissionRequestLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                startGallery()
+            } else {
+
+            }
+        }
 
 
     override fun onCreateView(
@@ -93,16 +104,17 @@ class UserComposeFragment : Fragment() {
         }
     }
 
-
+//    @Composable
 //    fun checkPermission():Boolean {
-//        if (ContextCompat.checkSelfPermission(ContentProviderCompat.requireContext(), Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED){
+//        val context = LocalContext.current
 //
-//        }
 //    }
 
 
     @Composable
     fun ComposeContent() {
+
+
         val currentUser: MutableState<User?> = remember { mutableStateOf(null) }
         var userName = remember { mutableStateOf("") }
         var userMail = remember { mutableStateOf("") }
@@ -114,6 +126,7 @@ class UserComposeFragment : Fragment() {
 
             }
         }
+
 
         Column(
             modifier = Modifier
@@ -193,6 +206,8 @@ class UserComposeFragment : Fragment() {
 
     @Composable
     fun profileImage() {
+        var isImagePermissionGranted by remember { mutableStateOf(ContextCompat.checkSelfPermission(requireContext(),
+            Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) }
         // val imagePermissionState = remember(Manifest.permission.)
         Image(painter = painterResource(id = R.drawable.baseline_question_mark_24),
             contentDescription = stringResource(id = R.string.imageNotSet),
@@ -206,16 +221,25 @@ class UserComposeFragment : Fragment() {
                 )
                 .fillMaxWidth()
                 .clickable {
-                    onProfileClick()
+
+                    if (isImagePermissionGranted){
+                        Log.d("!!!", "Have permission")
+                        startGallery()
+                    }else{
+                        permissionRequestLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                    }
+
                 }
         )
     }
 
-
-    fun onProfileClick() {
-
-        Log.d("!!!", "ProfileClicked")
+    private fun startGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, PERMISSION_REQUESTCODE)
     }
+
+
 
     @Composable
     fun addListOfCreatedMeals() {
