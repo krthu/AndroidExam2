@@ -20,21 +20,9 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SignUpFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class SignUpFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
 
     private lateinit var passwordEditText: EditText
     private lateinit var userNameEditText: EditText
@@ -54,8 +42,7 @@ class SignUpFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -245,20 +232,20 @@ class SignUpFragment : Fragment() {
             return
 
         } else {
-            Log.d("!!!", "Nothing is empty")
+
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { signup ->
                     if (signup.isSuccessful) {
-                        Log.d("!!!", "User SignedUp success")
+
                         val user = User(userId = auth.currentUser?.uid, userName = userName)
                         val db = FirebaseFirestore.getInstance()
-//                    db.collection("users").add(user)
+
                         user.userId?.let { db.collection("users").document(it).set(user) }
                         notifyLoginSuccess()
                         parentFragmentManager.popBackStack()
                     } else {
                         val errorCode = (signup.exception as FirebaseAuthException).errorCode
-                        //showMessage(snackbarAnchor, error.message)
+
                         when (errorCode) {
                             "ERROR_INVALID_EMAIL" -> {
                                 showMessage(snackbarAnchor, R.string.email_formatted_badly)
@@ -273,9 +260,6 @@ class SignUpFragment : Fragment() {
                             }
 
                         }
-
-
-                        Log.d("!!!", "User not created ${errorCode}")
 
                     }
                 }
@@ -293,38 +277,19 @@ class SignUpFragment : Fragment() {
     private fun showMessage(view: View, stringID: Int) {
         val message = getString(stringID)
         Snackbar.make(view, message, Snackbar.LENGTH_SHORT).setAnchorView(snackbarAnchor).apply {
-            setAction("Dismiss") {
+            setAction(getString(R.string.dismiss)) {
                 dismiss()
             }
         }.show()
     }
 
-    private fun showMessage(view: View, message: String?) {
-        //val message = getString(showMessage())
-        Snackbar.make(view, message.toString(), Snackbar.LENGTH_SHORT).setAnchorView(snackbarAnchor)
-            .apply {
-                setAction("Dismiss") {
-                    dismiss()
-                }
-            }.show()
-    }
-
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SignUpFragment.
-         */
-        // TODO: Rename and change types and number of parameters
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             SignUpFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
                 }
             }
     }

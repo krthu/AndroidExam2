@@ -1,6 +1,6 @@
 package com.example.androidexam2
 
-import android.content.Context
+
 import android.content.pm.PackageManager
 import androidx.fragment.app.Fragment
 import android.Manifest
@@ -12,19 +12,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
+
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
+
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import java.security.Permission
+
 
 class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
 
@@ -38,31 +38,20 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
     private val callback = OnMapReadyCallback { map ->
         googleMap = map
 
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-
-        if (gpsPoint != null && gpsPoint.isNotEmpty()){
+        if (gpsPoint != null && gpsPoint.isNotEmpty()) {
             val latLng = LatLng(gpsPoint[0], gpsPoint[1])
-            if (latLng != null){
-                if (marker == null){
+            if (latLng != null) {
+                if (marker == null) {
                     marker = googleMap.addMarker(MarkerOptions().position(latLng).title("Marker"))
-                }else{
+                } else {
                     marker?.position = latLng
                 }
 
 
-                val cameraUpdate = CameraUpdateFactory.newLatLngZoom( latLng, zoom)
+                val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, zoom)
                 googleMap.animateCamera(cameraUpdate)
             }
-        }
-        else{
+        } else {
             checkAndRequestPermission()
         }
 
@@ -71,51 +60,55 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
         googleMap.setOnMapClickListener(this)
     }
 
-    private fun checkAndRequestPermission(){
+    private fun checkAndRequestPermission() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
 
-        ){
+        ) {
             enableMyLocation()
-        }else{
+        } else {
             getLocationAccess.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
     private fun enableMyLocation() {
         if (ContextCompat.checkSelfPermission(
-            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            {
-                googleMap.isMyLocationEnabled = true
-                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    location?.let {
-                        val userLatLng = LatLng(it.latitude,it.longitude)
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(userLatLng, zoom)
-                        marker = googleMap.addMarker(MarkerOptions().position(userLatLng).title("Marker"))!!
-                        onMapClick(userLatLng)
-                        googleMap.animateCamera(cameraUpdate)
-                    }
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            googleMap.isMyLocationEnabled = true
+            val fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(requireActivity())
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    val userLatLng = LatLng(it.latitude, it.longitude)
+                    val cameraUpdate = CameraUpdateFactory.newLatLngZoom(userLatLng, zoom)
+                    marker =
+                        googleMap.addMarker(MarkerOptions().position(userLatLng).title("Marker"))!!
+                    onMapClick(userLatLng)
+                    googleMap.animateCamera(cameraUpdate)
                 }
-
             }
-        else{
-            Log.d("!!!", "No permission")
+
+        } else {
+
         }
 
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        getLocationAccess = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted){
+        getLocationAccess =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
 
-                enableMyLocation()
-            } else{
+                    enableMyLocation()
+                } else {
 
+                }
             }
-        }
     }
 
     override fun onCreateView(
@@ -139,18 +132,18 @@ class SmallMapFragment : Fragment(), GoogleMap.OnMapClickListener {
         mapFragment?.getMapAsync(callback)
     }
 
-     override fun onMapClick(latLng: LatLng) {
-         if (marker == null){
-             marker = googleMap.addMarker(MarkerOptions().position(latLng).title("Marker"))
-         }else{
-             marker?.position = latLng
-         }
-         marker?.position = latLng
-         googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+    override fun onMapClick(latLng: LatLng) {
+        if (marker == null) {
+            marker = googleMap.addMarker(MarkerOptions().position(latLng).title("Marker"))
+        } else {
+            marker?.position = latLng
+        }
+        marker?.position = latLng
+        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
 
-         val parentFragment = parentFragmentManager.findFragmentByTag("createMealFragment")
+        val parentFragment = parentFragmentManager.findFragmentByTag("createMealFragment")
 
-         if (parentFragment is CreateMealFragment){
+        if (parentFragment is CreateMealFragment) {
             parentFragment.onMapClick(latLng.latitude, latLng.longitude)
         }
     }

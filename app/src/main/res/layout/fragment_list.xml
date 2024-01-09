@@ -25,7 +25,6 @@
         style="@style/FAB_Style"
         android:clickable="true"
         android:src="@drawable/baseline_add_24_light_green"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
