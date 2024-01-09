@@ -21,4 +21,7 @@
     <string name="sing_up_question">Sign up?</string>
     <string name="please_fill_in_all_fields">Please fill in all fields</string>
     <string name="dismiss">Dismiss</string>
+    <string name="signed_in">Signed in</string>
+    <string name="no_ratings">No ratings</string>
+    <string name="rating_not_set">Rating not set</string>
 </resources>

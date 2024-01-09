@@ -123,7 +123,6 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
         getLocationAccess =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
-                    Log.d("!!!", "We have permission")
                     map.isMyLocationEnabled = true
                 }
             }

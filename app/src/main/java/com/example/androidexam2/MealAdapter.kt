@@ -63,7 +63,7 @@ class MealAdapter(
         if (rating != 0.0){
             holder.rateingView.text = String.format("%.1f", rating)
         } else{
-            holder.rateingView.text = "No ratings"
+            holder.rateingView.text = context.getString(R.string.no_ratings)
         }
 
 
