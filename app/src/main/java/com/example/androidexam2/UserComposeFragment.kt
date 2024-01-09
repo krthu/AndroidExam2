@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -152,12 +153,15 @@ class UserComposeFragment : Fragment() {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(20.dp)
+                .padding(10.dp)
+
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = CenterVertically
+                verticalAlignment = CenterVertically,
+
 
             ) {
                 profileImage("gs://androidexam2-ea308.appspot.com/images/d3ca4f2e-9134-407f-ada4-86484abccde5")
@@ -176,6 +180,7 @@ class UserComposeFragment : Fragment() {
                         .padding(5.dp)
                 )
             }
+            Barrier()
             Box(
                  modifier = Modifier
                      .weight(1f)
@@ -407,12 +412,7 @@ class UserComposeFragment : Fragment() {
 
             }
         }
-        Divider(
-            color = Color(R.color.dark_grey),
-            thickness = 1.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
+        Barrier()
     }
 
     private fun goToDetailsFragment(meal: Meal) {
@@ -439,3 +439,13 @@ class UserComposeFragment : Fragment() {
         ComposeContent()
     }
 }
+@Composable
+private fun Barrier(){
+    Divider(
+        color = Color(R.color.dark_grey),
+        thickness = 1.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+    )
+}
+
