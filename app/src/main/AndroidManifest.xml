@@ -33,10 +33,6 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".AddLocationActivity"
-            android:exported="false"
-            android:label="@string/title_activity_add_location" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

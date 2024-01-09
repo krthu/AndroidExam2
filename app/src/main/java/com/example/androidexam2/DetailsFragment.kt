@@ -22,42 +22,26 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [DetailsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DetailsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var meal: Meal? = null
     private var uri: Uri? = null
     private lateinit var detailsImageView: ImageView
     private lateinit var ratingTextView: TextView
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
             meal = it.getSerializable("meal") as Meal?
             val uriString = it.getString("uri")
-            if (uriString != null){
+            if (uriString != null) {
                 uri = Uri.parse(uriString)
             } else {
                 downloadImage()
             }
         }
     }
-
 
 
     override fun onCreateView(
@@ -82,11 +66,11 @@ class DetailsFragment : Fragment() {
 
         ratingTextView = view.findViewById(R.id.detailRatingTextView)
 
-        editImageView. isVisible = auth.currentUser?.uid == meal?.creator
-        editImageBackground. isVisible = auth.currentUser?.uid == meal?.creator
+        editImageView.isVisible = auth.currentUser?.uid == meal?.creator
+        editImageBackground.isVisible = auth.currentUser?.uid == meal?.creator
 
         editImageView.setOnClickListener { gotToCreateFragment() }
-        editImageBackground.setOnClickListener{ gotToCreateFragment()}
+        editImageBackground.setOnClickListener { gotToCreateFragment() }
 
         backButton.setOnClickListener {
             parentFragmentManager.popBackStack()
@@ -120,7 +104,6 @@ class DetailsFragment : Fragment() {
         locationImageView.setOnClickListener {
             goToMapsFragment()
         }
-        val rating = meal?.getAverageRating()
         setRatingTextView()
         parentFragmentManager.setFragmentResultListener("ratingsBundle", this) { key, bundle ->
             val newRating = bundle.getDouble("newRating")
@@ -132,7 +115,7 @@ class DetailsFragment : Fragment() {
     private fun updateRating(newRating: Double) {
         // Update the already downloaded meal ratings instead of making another fetch.
         val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (meal?.ratings == null){
+        if (meal?.ratings == null) {
             meal?.ratings = mutableMapOf()
         }
         meal?.ratings?.set(userId, newRating)
@@ -141,11 +124,10 @@ class DetailsFragment : Fragment() {
     }
 
 
-
-    private fun setRatingTextView(){
+    private fun setRatingTextView() {
         val rating = meal?.getAverageRating()
         var ratingString = ""
-        if (rating != 0.0){
+        if (rating != 0.0) {
             ratingString = String.format("%.1f", rating)
         }
         ratingTextView.text = ratingString
@@ -154,7 +136,7 @@ class DetailsFragment : Fragment() {
     }
 
 
-    private fun setImage(){
+    private fun setImage() {
         Glide.with(this)
             .load(uri)
             .centerCrop()
@@ -171,7 +153,7 @@ class DetailsFragment : Fragment() {
     }
 
 
-    private fun gotToCreateFragment(){
+    private fun gotToCreateFragment() {
         val bundle = Bundle()
         bundle.putSerializable("meal", meal)
         val createMealFragment = CreateMealFragment()
@@ -180,7 +162,7 @@ class DetailsFragment : Fragment() {
 
     }
 
-    private fun goToMapsFragment(){
+    private fun goToMapsFragment() {
         val bundle = Bundle()
         bundle.putSerializable("meal", meal)
         val mapFragment = MapsFragment()
@@ -188,46 +170,25 @@ class DetailsFragment : Fragment() {
         changeFragment(mapFragment)
     }
 
-    private fun changeFragment(fragment: Fragment){
+    private fun changeFragment(fragment: Fragment) {
         val transaction = parentFragmentManager.beginTransaction()
         transaction.addToBackStack(null)
         transaction.replace(R.id.fragmentContainer, fragment)
         transaction.commit()
     }
 
-    private fun startRateDialog(){
+    private fun startRateDialog() {
 
         val auth = FirebaseAuth.getInstance()
-        if (auth.currentUser != null){
+        if (auth.currentUser != null) {
 
             val rateDialogFragment = RateDialogFragment(meal)
             rateDialogFragment.show(parentFragmentManager, "rateDialog")
 
-        }else{
+        } else {
             val signInDialogFragment = SignInDialogFragment()
             signInDialogFragment.show(parentFragmentManager, "signInDialog")
         }
 
-    }
-
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

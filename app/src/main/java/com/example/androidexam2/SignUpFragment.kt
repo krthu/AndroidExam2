@@ -26,11 +26,6 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-
-
-
-
-
 /**
  * A simple [Fragment] subclass.
  * Use the [SignUpFragment.newInstance] factory method to
@@ -99,19 +94,19 @@ class SignUpFragment : Fragment() {
 
     private fun setOnFocusChangeListeners() {
         emailEditText.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus){
+            if (!hasFocus) {
                 val email = emailEditText.text.toString()
                 isValidEmail(email)
             }
         }
         passwordEditText.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus){
+            if (!hasFocus) {
                 val password = passwordEditText.text.toString()
                 isValidPassword(password)
             }
         }
         userNameEditText.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus){
+            if (!hasFocus) {
                 val userName = userNameEditText.text.toString()
                 isValidUserName(userName)
             }
@@ -119,9 +114,9 @@ class SignUpFragment : Fragment() {
 
     }
 
-    private fun isValidEmail(email: String): Boolean{
+    private fun isValidEmail(email: String): Boolean {
         val regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
-        return if (email.matches(regex)){
+        return if (email.matches(regex)) {
             true
         } else {
             showMailFormatError()
@@ -129,11 +124,16 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    private fun showMailFormatError(){
+    private fun showMailFormatError() {
         emailTextInputLayout.error = getString(R.string.email_formatted_badly)
         if (!mailHasTextListener) {
             emailEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                     // Kod som körs innan texten ändras
                 }
 
@@ -144,9 +144,9 @@ class SignUpFragment : Fragment() {
                 override fun afterTextChanged(emailEditable: Editable) {
                     mailHasTextListener = true
                     val email = emailEditText.text.toString()
-                    if (isValidEmail(email)){
+                    if (isValidEmail(email)) {
                         emailTextInputLayout.error = ""
-                    } else{
+                    } else {
                         emailTextInputLayout.error = getString(R.string.email_formatted_badly)
                     }
                 }
@@ -154,8 +154,8 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    private fun isValidPassword(password: String): Boolean{
-        if (password.length >= 6){
+    private fun isValidPassword(password: String): Boolean {
+        if (password.length >= 6) {
             return true
         }
         showPasswordError()
@@ -165,9 +165,14 @@ class SignUpFragment : Fragment() {
     private fun showPasswordError() {
         passwordTextInputLayout.error = getString(R.string.weak_password)
 
-        if (!passwordHasTextListener){
+        if (!passwordHasTextListener) {
             passwordEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                     //Not needed
                 }
 
@@ -177,7 +182,7 @@ class SignUpFragment : Fragment() {
 
                 override fun afterTextChanged(passwordEditable: Editable?) {
                     passwordHasTextListener = true
-                    if (passwordEditable.toString().length >= 6){
+                    if (passwordEditable.toString().length >= 6) {
                         passwordTextInputLayout.error = ""
                     } else {
                         passwordTextInputLayout.error = getString(R.string.weak_password)
@@ -189,7 +194,7 @@ class SignUpFragment : Fragment() {
 
     private fun isValidUserName(userName: String): Boolean {
 
-        if (userName.isNotEmpty()){
+        if (userName.isNotEmpty()) {
             return true
         }
         showUserNameError()
@@ -199,8 +204,13 @@ class SignUpFragment : Fragment() {
     private fun showUserNameError() {
         userNameTextInputLayout.error = getString(R.string.userNameEmpty)
         if (!userNameHasTextListener) {
-            userNameEditText.addTextChangedListener(object: TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            userNameEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                     //Not needed
                 }
 
@@ -210,7 +220,7 @@ class SignUpFragment : Fragment() {
 
                 override fun afterTextChanged(s: Editable?) {
                     userNameHasTextListener = true
-                    if (s.toString().isNotEmpty()){
+                    if (s.toString().isNotEmpty()) {
                         userNameTextInputLayout.error = ""
                     }
                 }
@@ -229,7 +239,7 @@ class SignUpFragment : Fragment() {
         val validPassword = isValidPassword(password)
         val validUserName = isValidUserName(userName)
 
-        if (!validEmail || !validPassword || !validUserName){
+        if (!validEmail || !validPassword || !validUserName) {
             isValidPassword(password)
             isValidUserName(userName)
             return
@@ -253,7 +263,8 @@ class SignUpFragment : Fragment() {
                             "ERROR_INVALID_EMAIL" -> {
                                 showMessage(snackbarAnchor, R.string.email_formatted_badly)
                             }
-                            "ERROR_WEAK_PASSWORD" ->  {
+
+                            "ERROR_WEAK_PASSWORD" -> {
                                 showMessage(snackbarAnchor, R.string.weak_password)
                             }
 
@@ -272,10 +283,9 @@ class SignUpFragment : Fragment() {
     }
 
 
-
-    private fun notifyLoginSuccess(){
+    private fun notifyLoginSuccess() {
         val activity = requireActivity()
-        if (activity is MainActivity){
+        if (activity is MainActivity) {
             activity.onLoginSuccess()
         }
     }
@@ -291,11 +301,12 @@ class SignUpFragment : Fragment() {
 
     private fun showMessage(view: View, message: String?) {
         //val message = getString(showMessage())
-        Snackbar.make(view, message.toString(), Snackbar.LENGTH_SHORT).setAnchorView(snackbarAnchor).apply {
-            setAction("Dismiss") {
-                dismiss()
-            }
-        }.show()
+        Snackbar.make(view, message.toString(), Snackbar.LENGTH_SHORT).setAnchorView(snackbarAnchor)
+            .apply {
+                setAction("Dismiss") {
+                    dismiss()
+                }
+            }.show()
     }
 
     companion object {
