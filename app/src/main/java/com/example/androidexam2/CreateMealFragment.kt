@@ -29,22 +29,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-
-/**
- * A simple [Fragment] subclass.
- * Use the [CreateMealFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class CreateMealFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var mealToEdit: Meal? = null
     private val auth = Firebase.auth
 
@@ -65,8 +51,6 @@ class CreateMealFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
             mealToEdit = it.getSerializable("meal") as Meal
         }
     }
@@ -103,8 +87,11 @@ class CreateMealFragment : Fragment() {
         saveButton = view.findViewById<Button>(R.id.saveMealButton)
         saveButton.setOnClickListener {
             if (mealNameEditText.text.isEmpty() || descriptionEditText.text.isEmpty()) {
-                Snackbar.make(requireContext(), saveButton, "Please fill in all fields", Snackbar.LENGTH_SHORT).setAnchorView(saveButton).show()
-            } else{
+                Snackbar.make(
+                    requireContext(), saveButton,
+                    getString(R.string.please_fill_in_all_fields), Snackbar.LENGTH_SHORT
+                ).setAnchorView(saveButton).show()
+            } else {
                 saveImageToStorage()
             }
         }
@@ -280,15 +267,16 @@ class CreateMealFragment : Fragment() {
             }
 
         }
-        Log.d("!!!", "Snackbar!")
+
         showMessage(getString(R.string.itemSaved))
         parentFragmentManager.popBackStack()
 
     }
 
-    private fun showMessage(message: String){
-        Snackbar.make(requireContext(), saveButton, message, Snackbar.LENGTH_SHORT).setAnchorView(saveButton).apply {
-            setAction("Dismiss") {
+    private fun showMessage(message: String) {
+        Snackbar.make(requireContext(), saveButton, message, Snackbar.LENGTH_SHORT)
+            .setAnchorView(saveButton).apply {
+            setAction(getString(R.string.dismiss)) {
                 dismiss()
             }
         }.show()
@@ -300,8 +288,6 @@ class CreateMealFragment : Fragment() {
             val storage = FirebaseStorage.getInstance()
             val storageRef = storage.reference.child("images/$filename")
             storageRef.delete().addOnSuccessListener {
-                Log.d("!!!", "deleted")
-
             }
         }
     }
@@ -321,7 +307,12 @@ class CreateMealFragment : Fragment() {
             mealToEdit!!.imageURI?.let { savePlace(it) }
 
         } else {
-            Snackbar.make(requireContext(), saveButton, getString(R.string.pleaseSelectImage), Snackbar.LENGTH_SHORT).setAnchorView(saveButton).show()
+            Snackbar.make(
+                requireContext(),
+                saveButton,
+                getString(R.string.pleaseSelectImage),
+                Snackbar.LENGTH_SHORT
+            ).setAnchorView(saveButton).show()
         }
 
     }
@@ -332,21 +323,10 @@ class CreateMealFragment : Fragment() {
 
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CreateMealFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
         fun newInstance(param1: String, param2: String) =
             CreateMealFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
                 }
             }
     }

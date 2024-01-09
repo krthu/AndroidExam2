@@ -1,15 +1,10 @@
 package com.example.androidexam2
 
-import android.content.ClipData.Item
-import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.Window
 import android.view.WindowManager
-
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -21,7 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
 
     lateinit var fragmentContainer: FrameLayout
     lateinit var bottomNavigationView: BottomNavigationView
@@ -31,13 +26,6 @@ class MainActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
-        // Color the info bar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val window: Window = window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor = ContextCompat.getColor(this, R.color.primary)
-        }
-
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
@@ -50,19 +38,19 @@ class MainActivity : AppCompatActivity(){
                     loadFragment(listFragment, false)
                     true
                 }
+
                 R.id.item_2 -> {
                     val mapFragment = MapsFragment()
-                    loadFragment(mapFragment, true)
+                    loadFragment(mapFragment, false)
                     true
                 }
 
                 R.id.item_3 -> {
-                    if (auth.currentUser != null){
+                    if (auth.currentUser != null) {
                         val userFragment = UserFragment()
                         loadFragment(userFragment, false)
                         true
-                    }
-                    else{
+                    } else {
                         val dialogFragment = SignInDialogFragment()
                         dialogFragment.show(supportFragmentManager, "signIn")
 
@@ -77,14 +65,12 @@ class MainActivity : AppCompatActivity(){
         }
     }
 
-    private val fragmentManagerListener  = FragmentManager.OnBackStackChangedListener {
-        Log.d("!!!", "Fragment Changed")
+    private val fragmentManagerListener = FragmentManager.OnBackStackChangedListener {
+// Makes sure the right indicator is shown in the bottom navigation
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-        if (currentFragment is ListFragment){
-            Log.d("!!!", "Fragment Changed it is List")
+        if (currentFragment is ListFragment) {
             bottomNavigationView.selectedItemId = R.id.item_1
-        } else if (currentFragment is DetailsFragment){
-            Log.d("!!!", "Fragment Changed it is Details")
+        } else if (currentFragment is DetailsFragment) {
             bottomNavigationView.selectedItemId = 0
         }
     }
@@ -93,7 +79,7 @@ class MainActivity : AppCompatActivity(){
     private fun loadFragment(fragment: Fragment, addToBackStack: Boolean) {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        if (addToBackStack){
+        if (addToBackStack) {
             fragmentTransaction.addToBackStack(null)
         }
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
@@ -101,33 +87,32 @@ class MainActivity : AppCompatActivity(){
     }
 
     fun onLoginSuccess() {
-        Snackbar.make(this, fragmentContainer, "Signed in", Snackbar.LENGTH_SHORT)
+        Snackbar.make(this, fragmentContainer, getString(R.string.signed_in), Snackbar.LENGTH_SHORT)
             .setAnchorView(fragmentContainer.findViewById(R.id.createMealButtonFloatingActionButton))
             .apply {
-            setAction("Dismiss") {
-                dismiss()
-            }
-        }.show()
+                setAction(getString(R.string.dismiss)) {
+                    dismiss()
+                }
+            }.show()
         setUserNameInMenu()
     }
 
-    private fun setUserNameInMenu(){
+    private fun setUserNameInMenu() {
 
         val db = FirebaseFirestore.getInstance()
         val uid = auth.currentUser?.uid
         if (uid != null) {
-            db.collection("users").document(uid).get().addOnSuccessListener {document ->
-                if (document != null){
+            db.collection("users").document(uid).get().addOnSuccessListener { document ->
+                if (document != null) {
                     val user = document.toObject<User>()
                     bottomNavigationView.menu.findItem(R.id.item_3).title = user?.userName
 
-                } }
-
-
+                }
+            }
         }
     }
 
-    fun onLogOut(){
+    fun onLogOut() {
         bottomNavigationView.menu.findItem(R.id.item_3).title = "User"
     }
 

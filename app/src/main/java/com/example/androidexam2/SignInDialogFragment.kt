@@ -2,28 +2,21 @@ package com.example.androidexam2
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 
 
-class SignInDialogFragment(): DialogFragment() {
+class SignInDialogFragment() : DialogFragment() {
     lateinit var emailEditText: EditText
     lateinit var passwordEditText: EditText
     lateinit var cancelButton: Button
@@ -49,11 +42,11 @@ class SignInDialogFragment(): DialogFragment() {
         view.findViewById<Button>(R.id.dialogFragmentSignInButton).setOnClickListener {
             signIn()
         }
-        cancelButton.setOnClickListener{
+        cancelButton.setOnClickListener {
             dismiss()
         }
 
-        signUpTextView.setOnClickListener{
+        signUpTextView.setOnClickListener {
 
             val signUpFragment = SignUpFragment()
             val transaction = parentFragmentManager.beginTransaction()
@@ -73,13 +66,13 @@ class SignInDialogFragment(): DialogFragment() {
 
     private fun setOnFocusChangeListeners() {
         emailEditText.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus){
+            if (!hasFocus) {
                 val email = emailEditText.text.toString()
                 isValidEmail(email)
             }
         }
         passwordEditText.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus){
+            if (!hasFocus) {
                 val password = passwordEditText.text.toString()
                 isValidPassword(password)
             }
@@ -87,9 +80,9 @@ class SignInDialogFragment(): DialogFragment() {
 
     }
 
-    private fun isValidEmail(email: String): Boolean{
+    private fun isValidEmail(email: String): Boolean {
         val regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
-        return if (email.matches(regex)){
+        return if (email.matches(regex)) {
             true
         } else {
             showMailFormatError()
@@ -97,11 +90,16 @@ class SignInDialogFragment(): DialogFragment() {
         }
     }
 
-    private fun showMailFormatError(){
+    private fun showMailFormatError() {
         emailTextInputLayout.error = getString(R.string.email_formatted_badly)
         if (!mailHasTextListener) {
             emailEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                     // Kod som körs innan texten ändras
                 }
 
@@ -112,17 +110,18 @@ class SignInDialogFragment(): DialogFragment() {
                 override fun afterTextChanged(emailEditable: Editable) {
                     mailHasTextListener = true
                     val email = emailEditText.text.toString()
-                    if (isValidEmail(email)){
+                    if (isValidEmail(email)) {
                         emailTextInputLayout.error = ""
-                    } else{
+                    } else {
                         emailTextInputLayout.error = getString(R.string.email_formatted_badly)
                     }
                 }
             })
         }
     }
-    private fun isValidPassword(password: String): Boolean{
-        if (password.length >= 6){
+
+    private fun isValidPassword(password: String): Boolean {
+        if (password.length >= 6) {
             return true
         }
         showPasswordError()
@@ -132,9 +131,14 @@ class SignInDialogFragment(): DialogFragment() {
     private fun showPasswordError() {
         passwordTextInputLayout.error = getString(R.string.weak_password)
 
-        if (!passwordHasTextListener){
+        if (!passwordHasTextListener) {
             passwordEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
                     //Not needed
                 }
 
@@ -144,7 +148,7 @@ class SignInDialogFragment(): DialogFragment() {
 
                 override fun afterTextChanged(passwordEditable: Editable?) {
                     passwordHasTextListener = true
-                    if (passwordEditable.toString().length >= 6){
+                    if (passwordEditable.toString().length >= 6) {
                         passwordTextInputLayout.error = ""
                     } else {
                         passwordTextInputLayout.error = getString(R.string.weak_password)
@@ -154,38 +158,39 @@ class SignInDialogFragment(): DialogFragment() {
         }
     }
 
-    private fun signIn(){
+    private fun signIn() {
         val email = emailEditText.text.toString()
         val password = passwordEditText.text.toString()
         val validEmail = isValidEmail(email)
         val validPassword = isValidPassword(password)
 
-        if (validEmail && validPassword){
+        if (validEmail && validPassword) {
             val auth = FirebaseAuth.getInstance()
             auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
                 notifyLoginSuccess()
                 dismiss()
             }
-                .addOnFailureListener{e ->
+                .addOnFailureListener { e ->
 
-                    showErrorMessage(cancelButton, "Invalid credentials!")
+                    showErrorMessage(cancelButton, getString(R.string.invalid_credentials))
                 }
         }
     }
 
     private fun showErrorMessage(view: View, message: String) {
-        Snackbar.make(requireContext(), view, message, Snackbar.LENGTH_SHORT).setAnchorView(view).apply {
-            setAction("Dismiss") {
-                dismiss()
-            }
-        }.show()
+        Snackbar.make(requireContext(), view, message, Snackbar.LENGTH_SHORT).setAnchorView(view)
+            .apply {
+                setAction(R.string.dismiss) {
+                    dismiss()
+                }
+            }.show()
     }
 
     // If i should navigate to new fragment after finished logging in perhaps use this
-    private fun goToFragment(fragment: Fragment, addToBackStack: Boolean){
+    private fun goToFragment(fragment: Fragment, addToBackStack: Boolean) {
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.fragmentContainer, fragment)
-        if (addToBackStack){
+        if (addToBackStack) {
             transaction.addToBackStack("signIn")
         }
         transaction.commit()
@@ -193,9 +198,9 @@ class SignInDialogFragment(): DialogFragment() {
     }
 
 
-    private fun notifyLoginSuccess(){
+    private fun notifyLoginSuccess() {
         val activity = requireActivity()
-        if (activity is MainActivity){
+        if (activity is MainActivity) {
             activity.onLoginSuccess()
         }
     }

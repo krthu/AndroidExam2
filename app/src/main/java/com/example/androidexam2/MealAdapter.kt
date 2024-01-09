@@ -62,19 +62,20 @@ class MealAdapter(
         val rating = meal.getAverageRating()
         if (rating != 0.0){
             holder.rateingView.text = String.format("%.1f", rating)
+        } else{
+            holder.rateingView.text = context.getString(R.string.no_ratings)
         }
 
 
         val storageRef =
             meal.imageURI?.let { FirebaseStorage.getInstance().getReferenceFromUrl(it) }
         storageRef?.downloadUrl?.addOnSuccessListener { uri ->
-            //holder.rowPlaceImageView.layout(0,0,0,0)
+
             setUri = uri
             Glide.with(context)
                 .load(uri)
                 .centerCrop()
                 .placeholder(R.drawable.baseline_question_mark_24)
-//                .override(200, 200)
                 .into(holder.rowMealImageView)
         }
 
