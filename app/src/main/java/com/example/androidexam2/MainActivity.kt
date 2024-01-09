@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(){
                 }
                 R.id.item_2 -> {
                     val mapFragment = MapsFragment()
-                    loadFragment(mapFragment, true)
+                    loadFragment(mapFragment, false)
                     true
                 }
 

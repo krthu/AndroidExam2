@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 
@@ -31,18 +32,17 @@ import com.google.firebase.firestore.toObject
 
 
 class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
-    private val REQUEST_LOCATION = 2
     private var chosenMeal: Meal? = null
     private val meals = mutableListOf<Meal>()
     private val zoomLevel = 13.0f
     private lateinit var locationProvider: FusedLocationProviderClient
     private lateinit var getLocationAccess: ActivityResultLauncher<String>
     private lateinit var map: GoogleMap
+    private lateinit var mapsBackButton: FloatingActionButton
+
 
     private val callback = OnMapReadyCallback { googleMap ->
 
-        val customMapInfoWindowAdapter = CustomMapInfoWindowAdapter(requireContext())
-        //googleMap.setInfoWindowAdapter(customMapInfoWindowAdapter)
         map = googleMap
         checkAndRequestPermission(googleMap)
 
@@ -57,6 +57,7 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
     }
 
     private fun placeListOfMarkers(googleMap: GoogleMap) {
+
         for (meal in meals) {
             if (meal.gpsArray?.size != 0) {
                 val lat = meal.gpsArray?.get(0)
@@ -83,11 +84,11 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
     }
 
     fun addOneMarker(googleMap: GoogleMap) {
+        mapsBackButton.isVisible = true
         val lat = chosenMeal?.gpsArray?.get(0)
         val long = chosenMeal?.gpsArray?.get(1)
 
         if (lat != null && long != null) {
-            Log.d("!!!", "$lat & $long")
             val mealLatLng = LatLng(lat, long)
 
 
@@ -108,14 +109,6 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
                             val cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, padding)
                             googleMap.animateCamera(cameraUpdate)
 
-                            // Info on distance between
-//                            val distance = FloatArray(1)
-//                            Location.distanceBetween(
-//                                mealLatLng.latitude, mealLatLng.longitude,
-//                                userLatLng.latitude, userLatLng.longitude, distance
-//                            )
-//                            val distanceInKm = distance[0] / 1000
-//                            Log.d("!!!", distanceInKm.toString())
                         }
                     }
                 }
@@ -183,7 +176,7 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-        val mapsBackButton =
+        mapsBackButton =
             view.findViewById<FloatingActionButton>(R.id.mapsBackFloatingActionButton)
         mapsBackButton.setOnClickListener {
             parentFragmentManager.popBackStack()
@@ -198,7 +191,7 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
             bundle.putSerializable("meal", markerMeal)
             detailsFragment.arguments = bundle
         }
-        Log.d("!!!", "${markerMeal?.name.toString()} Från window clicked")
+
         val transaction = parentFragmentManager.beginTransaction()
         transaction.addToBackStack(null)
         transaction.replace(R.id.fragmentContainer, detailsFragment)

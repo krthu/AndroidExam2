@@ -62,6 +62,8 @@ class MealAdapter(
         val rating = meal.getAverageRating()
         if (rating != 0.0){
             holder.rateingView.text = String.format("%.1f", rating)
+        } else{
+            holder.rateingView.text = "No ratings"
         }
 
 

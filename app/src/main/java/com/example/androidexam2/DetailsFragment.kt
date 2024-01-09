@@ -109,7 +109,7 @@ class DetailsFragment : Fragment() {
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         val creator = document.toObject<User>()
-                        Log.d("!!!", document.toString())
+
                         creatorTextView.text = creator?.userName
                     }
                 }
@@ -199,7 +199,7 @@ class DetailsFragment : Fragment() {
 
         val auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null){
-           // signInDialogFragment.parentFragmentManager.setFragmentResultListener()
+
             val rateDialogFragment = RateDialogFragment(meal)
             rateDialogFragment.show(parentFragmentManager, "rateDialog")
 
@@ -210,9 +210,6 @@ class DetailsFragment : Fragment() {
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
 
     companion object {
         /**
