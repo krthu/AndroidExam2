@@ -49,8 +49,15 @@ class UserFragment : Fragment() {
             }
 
             auth.signOut()
+            goToListFragment()
         }
 
+    }
+
+    private fun goToListFragment(){
+        val transaction = parentFragmentManager.beginTransaction()
+        val listFragment = ListFragment()
+        transaction.replace(R.id.fragmentContainer, listFragment).commit()
     }
 
     companion object {
