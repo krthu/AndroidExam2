@@ -20,9 +20,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
+
 import androidx.compose.foundation.layout.Row
+
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,6 +43,7 @@ import androidx.compose.material3.ButtonColors
 
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.Divider
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -57,7 +63,9 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -66,6 +74,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -129,9 +138,7 @@ class UserComposeFragment : Fragment() {
         val currentUser: MutableState<User?> = remember { mutableStateOf(null) }
         var userName = remember { mutableStateOf("") }
         var userMail = remember { mutableStateOf("") }
-//        var mealsState = remember {
-//            mutableStateOf(emptyList<Meal>())
-//        }
+
         LaunchedEffect(true) {
             getUserFromDB { user ->
                 currentUser.value = user
@@ -141,17 +148,10 @@ class UserComposeFragment : Fragment() {
             }
         }
 
-//        LaunchedEffect(key1 = true) {
-//                getMeals { meals ->
-//                    mealsState.value = meals
-//                }
-//
-//        }
-
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
                 .padding(20.dp)
         ) {
             Row(
@@ -176,7 +176,14 @@ class UserComposeFragment : Fragment() {
                         .padding(5.dp)
                 )
             }
-            addListOfCreatedMeals()
+            Box(
+                 modifier = Modifier
+                     .weight(1f)
+                     .padding(0.dp, 0.dp, 0.dp, 5.dp)
+            ){
+                addListOfCreatedMeals()
+            }
+
             logOutButton()
         }
 
@@ -261,7 +268,7 @@ class UserComposeFragment : Fragment() {
             .clickable {
 
                 if (isImagePermissionGranted) {
- 
+
                     startGallery()
                 } else {
                     permissionRequestLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
@@ -321,7 +328,8 @@ class UserComposeFragment : Fragment() {
             }
 
         }
-        LazyColumn() {
+        LazyColumn(
+        ) {
             items(mealsState.toList()) { meal ->
                 mealItem(meal)
             }
@@ -343,7 +351,9 @@ class UserComposeFragment : Fragment() {
             .fillMaxWidth()
             .height(100.dp)
             .padding(0.dp, 5.dp)
-
+            .clickable {
+                goToDetailsFragment(meal)
+            }
             ){
             GlideImage(model = downloadedImage.value,
                 contentDescription = "Test",
@@ -351,18 +361,68 @@ class UserComposeFragment : Fragment() {
                     .size(100.dp),
                 contentScale = ContentScale.Crop
             )
-            meal.name?.let {
-                Text(
-                    text = it,
-                    fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+            Column(
+                modifier = Modifier
+                    .padding(5.dp)
 
-                    modifier = Modifier
-                        .padding(5.dp)
+            ) {
+                meal.name?.let {
+                    Text(
+                        text = it,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.montserrat_bold)),
 
-                )
+                        modifier = Modifier
+                          
+                    )
+                }
+                Row {
+                    val rating = meal.getAverageRating()
+                    var ratingString = stringResource(R.string.no_ratings)
+                    if (rating != 0.0){
+                        ratingString = String.format("%.1f", rating)
+                    }else{
+                        ""
+                    }
+                    Text(
+                        text = ratingString,
+                        )
+                    if (rating != 0.0){
+                        Image(
+                            painter = painterResource(id = R.drawable.baseline_star_rate_24),
+                            contentDescription = "Stars",
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                    }
+                }
+                meal.description?.let {
+                    Text(
+                        text = it,
+                        fontFamily = FontFamily(Font(R.font.montserrat_light)),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+
+                    ) }
+
             }
         }
+        Divider(
+            color = Color(R.color.dark_grey),
+            thickness = 1.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
 
+    private fun goToDetailsFragment(meal: Meal) {
+        val detailsFragment = DetailsFragment()
+        val bundle = Bundle()
+        bundle.putSerializable("meal", meal)
+        detailsFragment.arguments = bundle
+        val transaction = parentFragmentManager.beginTransaction()
+        transaction.addToBackStack("user")
+        transaction.replace(R.id.fragmentContainer, detailsFragment).commit()
     }
 
     private fun downloadedImageFromFireBase(mealImage: String?, callback: (Uri?) -> Unit) {

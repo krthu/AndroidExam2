@@ -53,6 +53,9 @@ dependencies {
     implementation ("androidx.compose.material3:material3")
     implementation ("androidx.compose.foundation:foundation:1.1.0")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+
+
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")

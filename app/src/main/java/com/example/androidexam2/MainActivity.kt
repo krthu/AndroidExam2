@@ -134,8 +134,19 @@ class MainActivity : AppCompatActivity(){
         }
     }
 
+
     fun onLogOut(){
         bottomNavigationView.menu.findItem(R.id.item_3).title = "User"
+        goToListFragment()
     }
+
+    private fun goToListFragment() {
+        val transaction = supportFragmentManager.beginTransaction()
+        val listFragment = ListFragment()
+        transaction.replace(R.id.fragmentContainer, listFragment).commit()
+
+    }
+
+
 
 }
