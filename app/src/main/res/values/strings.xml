@@ -20,6 +20,14 @@
     <string name="imageNotSet">Image not set</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sing_up_question">Sign up?</string>
-    <string name="no_ratings">No ratings</string>
+
     <string name="your_posts">Your posts</string>
+
+    <string name="please_fill_in_all_fields">Please fill in all fields</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="signed_in">Signed in</string>
+    <string name="no_ratings">No ratings</string>
+    <string name="rating_not_set">Rating not set</string>
+    <string name="invalid_credentials">Invalid credentials!</string>
+
 </resources>

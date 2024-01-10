@@ -62,6 +62,8 @@ class MealAdapter(
         val rating = meal.getAverageRating()
         if (rating != 0.0){
             holder.rateingView.text = String.format("%.1f", rating)
+        } else{
+            holder.rateingView.text = context.getString(R.string.no_ratings)
         }
 
 
@@ -74,7 +76,6 @@ class MealAdapter(
                 .load(uri)
                 .centerCrop()
                 .placeholder(R.drawable.baseline_question_mark_24)
-
                 .into(holder.rowMealImageView)
         }
 
