@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
+        supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
@@ -37,8 +37,8 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.item_1 -> {
                     val listFragment = ListFragment()
+                    supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     loadFragment(listFragment, false)
-
                     true
                 }
 
@@ -68,15 +68,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private val fragmentManagerListener = FragmentManager.OnBackStackChangedListener {
-//// Makes sure the right indicator is shown in the bottom navigation
-//        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-//        if (currentFragment is ListFragment) {
-//            bottomNavigationView.selectedItemId = R.id.item_1
-//        } else if (currentFragment is DetailsFragment) {
-//            bottomNavigationView.selectedItemId = 0
-//        }
-//    }
+    private val fragmentManagerListener = FragmentManager.OnBackStackChangedListener {
+// Makes sure the right indicator is shown in the bottom navigation
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (currentFragment is ListFragment) {
+            bottomNavigationView.selectedItemId = R.id.item_1
+        }
+    }
 
 
     private fun loadFragment(fragment: Fragment, addToBackStack: Boolean) {
@@ -118,7 +116,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onLogOut() {
         bottomNavigationView.menu.findItem(R.id.item_3).title = "User"
-        goToListFragment()
+        bottomNavigationView.menu.findItem(R.id.item_1)?.isChecked = true
+
     }
 
     private fun goToListFragment() {
