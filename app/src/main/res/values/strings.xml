@@ -21,4 +21,5 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sing_up_question">Sign up?</string>
     <string name="no_ratings">No ratings</string>
+    <string name="your_posts">Your posts</string>
 </resources>

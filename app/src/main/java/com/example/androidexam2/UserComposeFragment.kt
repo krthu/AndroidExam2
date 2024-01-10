@@ -5,47 +5,33 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.content.pm.PackageManager
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
-import android.content.res.Resources
-import android.content.res.Resources.Theme
 import android.net.Uri
-import android.text.style.BackgroundColorSpan
-import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
-
 import androidx.compose.foundation.layout.Row
-
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Divider
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,20 +42,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Bottom
-import androidx.compose.ui.Alignment.Companion.BottomStart
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -78,42 +57,23 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-
-
-
-
-
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.google.android.gms.maps.model.Circle
-import com.google.firebase.Firebase
-import com.google.firebase.annotations.concurrent.Background
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.storage
+import java.util.UUID
 
 
 class UserComposeFragment : Fragment() {
-    private val PERMISSION_REQUESTCODE = 1
-    val auth = FirebaseAuth.getInstance()
-    val db = FirebaseFirestore.getInstance()
-    val userID = auth.currentUser?.uid
-    private val permissionRequestLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                startGallery()
-            } else {
 
-            }
-        }
+    val auth = FirebaseAuth.getInstance()
+    private val db = FirebaseFirestore.getInstance()
+    private val userID = auth.currentUser?.uid
+    private var currentUser: User? = null
 
 
     override fun onCreateView(
@@ -133,19 +93,16 @@ class UserComposeFragment : Fragment() {
     @Composable
     fun ComposeContent() {
 
-        val profileUrl = remember {
-            mutableStateOf("")
-        }
-        val currentUser: MutableState<User?> = remember { mutableStateOf(null) }
+        val currentUserState: MutableState<User?> = remember { mutableStateOf(null) }
         var userName = remember { mutableStateOf("") }
         var userMail = remember { mutableStateOf("") }
 
         LaunchedEffect(true) {
             getUserFromDB { user ->
-                currentUser.value = user
+                currentUserState.value = user
+                currentUser = user
                 userName.value = user?.userName.toString()
                 userMail.value = user?.userId.toString()
-
             }
         }
 
@@ -164,9 +121,20 @@ class UserComposeFragment : Fragment() {
 
 
             ) {
-                profileImage("gs://androidexam2-ea308.appspot.com/images/d3ca4f2e-9134-407f-ada4-86484abccde5")
+                Box(
+                    Modifier
+                        .size(100.dp)
+                        .align(CenterVertically)
+                        .clip(CircleShape)
+
+
+
+                ){
+                    profileImage(currentUserState.value?.imageUrl)
+                }
+
                 Text(
-                    text = userName.value,
+                    text = userName.value.uppercase(),
                     style = TextStyle(
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.montserrat_bold))
@@ -174,12 +142,18 @@ class UserComposeFragment : Fragment() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp)
-                        .border(
-                            BorderStroke(1.dp, Color.Black)
-                        )
                         .padding(5.dp)
                 )
             }
+
+            Text(
+                text = stringResource(R.string.your_posts),
+                fontFamily = FontFamily(Font(R.font.montserrat_bold)),
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+
+            )
             Barrier()
             Box(
                  modifier = Modifier
@@ -221,7 +195,7 @@ class UserComposeFragment : Fragment() {
         if (userID != null) {
             db.collection("users").document(userID).get().addOnSuccessListener { document ->
                 val user = document.toObject<User>()
-                Log.d("!!!", user?.userName.toString())
+
                 callback.invoke(user)
             }
         }
@@ -230,7 +204,6 @@ class UserComposeFragment : Fragment() {
     @Composable
     fun logOutButton() {
         MaterialTheme(
-
         ){
             Button(
                 modifier = Modifier
@@ -242,7 +215,6 @@ class UserComposeFragment : Fragment() {
                     }
                     auth.signOut()
                     goToListFragment()
-
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(red = 0, green = 32, blue = 63)
@@ -260,32 +232,89 @@ class UserComposeFragment : Fragment() {
         var isImagePermissionGranted by remember { mutableStateOf(ContextCompat.checkSelfPermission(requireContext(),
             Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) }
 
+        val downloadedProfileImage = remember {
+            mutableStateOf(firebaseRef?.let { Uri.parse(it) })
+        }
+
+
+        val imagePicker =
+            rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    val selectedImageUri: Uri? = data?.data
+                    Log.d("!!!", "Made it 247")
+                    if (selectedImageUri != null){
+                        val storageRef =
+                            FirebaseStorage.getInstance().getReference("images/${UUID.randomUUID()}")
+                        selectedImageUri?.let { storageRef.putFile(it) }
+                            ?.addOnSuccessListener {
+                                if (currentUser?.imageUrl != null){
+                                    deleteOldUserImage(currentUser!!.imageUrl!!)
+                                }
+                                currentUser?.imageUrl = storageRef.toString()
+                                saveUserImage(storageRef.toString())
+                                downloadedProfileImage.value = selectedImageUri
+                            }
+                    }
+                }
+            }
+
+        val permissionLauncher =
+            rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    isImagePermissionGranted = isGranted
+
+                    imagePicker.launch(Intent(Intent.ACTION_PICK).setType("image/*"))
+                } else {
+
+                }
+            }
+
 
         val imageModifier = Modifier
-            .size(100.dp)
+            .fillMaxSize()
             .clip(CircleShape)
-            .padding(10.dp)
-            .border(
-                BorderStroke(1.dp, Color.Black),
-                CircleShape
-            )
-            .fillMaxWidth()
             .clickable {
-
                 if (isImagePermissionGranted) {
-
-                    startGallery()
+                    imagePicker.launch(Intent(Intent.ACTION_PICK).setType("image/*"))
                 } else {
-                    permissionRequestLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                    permissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
                 }
 
             }
+
         if (firebaseRef != null){
-            loadFirebaseImage(firebaseRef, imageModifier)
-        }else{
+            LaunchedEffect(key1 = true){
+                downloadedImageFromFireBase(firebaseRef) { uri ->
+                    downloadedProfileImage.value = uri
+                }
+            }
+            loadFirebaseImage(downloadedProfileImage.value, imageModifier)
+        }else if (downloadedProfileImage.value != null){
+            loadFirebaseImage(uri = downloadedProfileImage.value, imageModifier = imageModifier)
+        } else{
             loadPlaceholderImage(imageModifier)
         }
 
+    }
+
+    private fun deleteOldUserImage(urlToDelete: String) {
+            if (urlToDelete != null) {
+                val filename = urlToDelete.substringAfterLast("/")
+                val storage = FirebaseStorage.getInstance()
+                val storageRef = storage.reference.child("images/$filename")
+                storageRef.delete().addOnSuccessListener {
+                    Log.d("!!!", "deleted")
+                }
+            }
+        }
+
+    private fun saveUserImage(imageRef: String) {
+        val db = FirebaseFirestore.getInstance()
+        if (userID != null) {
+            db.collection("users").document(userID).update("imageUrl", imageRef).addOnSuccessListener {
+            }
+        }
     }
 
     @Composable
@@ -293,36 +322,21 @@ class UserComposeFragment : Fragment() {
         Image(painter = painterResource(id = R.drawable.baseline_question_mark_24),
             contentDescription = stringResource(id = R.string.imageNotSet),
             modifier = imageModifier)
-
     }
 
     @OptIn(ExperimentalGlideComposeApi::class)
     @Composable
-    private fun loadFirebaseImage(url: String, imageModifier: Modifier) {
+    private fun loadFirebaseImage(uri: Uri?, imageModifier: Modifier) {
             GlideImage(
-                model = url,
+                modifier = imageModifier,
+                model = uri,
+                contentScale = ContentScale.FillBounds,
                 contentDescription = "Profile image",
-                modifier = imageModifier
             )
     }
 
-    private fun startGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, PERMISSION_REQUESTCODE)
-    }
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PERMISSION_REQUESTCODE && resultCode == AppCompatActivity.RESULT_OK && data != null){
-            val imageuri = data.data
-
-        }
-    }
-
-
 
     @Composable
-
     fun addListOfCreatedMeals() {
         var mealsState = remember {
             mutableStateListOf<Meal>()
@@ -331,7 +345,6 @@ class UserComposeFragment : Fragment() {
             getMeals { meals ->
                 mealsState.addAll(meals)
             }
-
         }
         LazyColumn(
         ) {
@@ -376,9 +389,8 @@ class UserComposeFragment : Fragment() {
                         text = it,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.montserrat_bold)),
-
                         modifier = Modifier
-                          
+
                     )
                 }
                 Row {
@@ -425,10 +437,12 @@ class UserComposeFragment : Fragment() {
         transaction.replace(R.id.fragmentContainer, detailsFragment).commit()
     }
 
-    private fun downloadedImageFromFireBase(mealImage: String?, callback: (Uri?) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(mealImage.toString())
-        storageRef?.downloadUrl?.addOnSuccessListener {uri ->
-            callback.invoke(uri)
+    private fun downloadedImageFromFireBase(image: String?, callback: (Uri?) -> Unit) {
+        if (image != null){
+            val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(image.toString())
+            storageRef?.downloadUrl?.addOnSuccessListener {uri ->
+                callback.invoke(uri)
+            }
         }
     }
 
@@ -448,4 +462,5 @@ private fun Barrier(){
             .fillMaxWidth()
     )
 }
+
 
