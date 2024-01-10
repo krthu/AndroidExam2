@@ -29,7 +29,14 @@ class MainActivity : AppCompatActivity() {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
-        loadFragment(ListFragment(), false)
+
+        //loadFragment(ListFragment(), false)
+
+        // Remove when we are done
+        loadFragment(UserComposeFragment(), false)
+
+
+
         setUserNameInMenu()
         bottomNavigationView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -112,8 +119,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     fun onLogOut() {
         bottomNavigationView.menu.findItem(R.id.item_3).title = "User"
+        goToListFragment()
     }
+
+    private fun goToListFragment() {
+        val transaction = supportFragmentManager.beginTransaction()
+        val listFragment = ListFragment()
+        transaction.replace(R.id.fragmentContainer, listFragment).commit()
+
+    }
+
+
 
 }
