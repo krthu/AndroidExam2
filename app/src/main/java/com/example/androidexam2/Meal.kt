@@ -8,7 +8,6 @@ data class Meal(
     var name: String? = null,
     var description: String? = null,
     var creator: String? = null,
-    var published: Boolean = false,
     var imageURI: String? = null,
     var gpsArray: MutableList<Double>? = null,
     var ratings: MutableMap<String?, Double>? = null

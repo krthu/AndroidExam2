@@ -33,9 +33,6 @@ import java.util.UUID
 class CreateMealFragment : Fragment() {
     private var mealToEdit: Meal? = null
     private val auth = Firebase.auth
-
-
-    lateinit var publishedSwitch: Switch
     lateinit var mealNameEditText: EditText
     lateinit var descriptionEditText: EditText
     lateinit var mealImageView: ImageView
@@ -66,8 +63,6 @@ class CreateMealFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        publishedSwitch = view.findViewById(R.id.publishedSwitch)
         mealNameEditText = view.findViewById(R.id.mealNameEditText)
         descriptionEditText = view.findViewById(R.id.descriptionEditText)
         mealImageView = view.findViewById(R.id.mealImageView)
@@ -126,7 +121,8 @@ class CreateMealFragment : Fragment() {
                 mealToEdit?.imageURI?.let { urlToDelete ->
                     deleteImageFromStorage(urlToDelete)
                     showMessage(getString(R.string.itemDeleted))
-                    parentFragmentManager.popBackStack()
+                    val fragment = ListFragment()
+                    parentFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit()
                 }
             }
         }
@@ -242,12 +238,10 @@ class CreateMealFragment : Fragment() {
     private fun savePlace(storageRef: String) {
         val name = mealNameEditText.text.toString()
         val description = descriptionEditText.text.toString()
-        val published = publishedSwitch.isChecked
 
         val meal = Meal(
             name = name,
             description = description,
-            published = published,
             creator = auth.currentUser?.uid,
             imageURI = storageRef,
             gpsArray = gpsArray

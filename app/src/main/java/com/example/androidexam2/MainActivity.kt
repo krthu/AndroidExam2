@@ -1,12 +1,12 @@
 package com.example.androidexam2
 
-import android.os.Build
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Window
-import android.view.WindowManager
+import android.util.Log
+
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
+
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -25,17 +25,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
+        //supportFragmentManager.addOnBackStackChangedListener(fragmentManagerListener)
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
 
-        //loadFragment(ListFragment(), false)
-
-        // Remove when we are done
-        loadFragment(UserComposeFragment(), false)
-
-
+        loadFragment(ListFragment(), false)
 
         setUserNameInMenu()
         bottomNavigationView.setOnItemSelectedListener { menuItem ->
@@ -43,6 +38,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.item_1 -> {
                     val listFragment = ListFragment()
                     loadFragment(listFragment, false)
+
                     true
                 }
 
@@ -54,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.item_3 -> {
                     if (auth.currentUser != null) {
-                        val userFragment = UserFragment()
+                        val userFragment = UserComposeFragment()
                         loadFragment(userFragment, false)
                         true
                     } else {
@@ -72,15 +68,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val fragmentManagerListener = FragmentManager.OnBackStackChangedListener {
-// Makes sure the right indicator is shown in the bottom navigation
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-        if (currentFragment is ListFragment) {
-            bottomNavigationView.selectedItemId = R.id.item_1
-        } else if (currentFragment is DetailsFragment) {
-            bottomNavigationView.selectedItemId = 0
-        }
-    }
+//    private val fragmentManagerListener = FragmentManager.OnBackStackChangedListener {
+//// Makes sure the right indicator is shown in the bottom navigation
+//        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+//        if (currentFragment is ListFragment) {
+//            bottomNavigationView.selectedItemId = R.id.item_1
+//        } else if (currentFragment is DetailsFragment) {
+//            bottomNavigationView.selectedItemId = 0
+//        }
+//    }
 
 
     private fun loadFragment(fragment: Fragment, addToBackStack: Boolean) {

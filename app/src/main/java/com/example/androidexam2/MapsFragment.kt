@@ -192,7 +192,7 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
         }
 
         val transaction = parentFragmentManager.beginTransaction()
-        transaction.addToBackStack(null)
+        transaction.addToBackStack("map")
         transaction.replace(R.id.fragmentContainer, detailsFragment)
         transaction.commit()
     }
