@@ -1,12 +1,12 @@
 package com.example.androidexam2
 
-import android.os.Build
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Window
-import android.view.WindowManager
+import android.util.Log
+
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
+
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -30,18 +30,14 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         fragmentContainer = findViewById(R.id.fragmentContainer)
 
-        //loadFragment(ListFragment(), false)
-
-        // Remove when we are done
-        loadFragment(UserComposeFragment(), false)
-
-
+        loadFragment(ListFragment(), false)
 
         setUserNameInMenu()
         bottomNavigationView.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.item_1 -> {
                     val listFragment = ListFragment()
+                    supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                     loadFragment(listFragment, false)
                     true
                 }
@@ -54,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.item_3 -> {
                     if (auth.currentUser != null) {
-                        val userFragment = UserFragment()
+                        val userFragment = UserComposeFragment()
                         loadFragment(userFragment, false)
                         true
                     } else {
@@ -77,8 +73,6 @@ class MainActivity : AppCompatActivity() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
         if (currentFragment is ListFragment) {
             bottomNavigationView.selectedItemId = R.id.item_1
-        } else if (currentFragment is DetailsFragment) {
-            bottomNavigationView.selectedItemId = 0
         }
     }
 
@@ -122,7 +116,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onLogOut() {
         bottomNavigationView.menu.findItem(R.id.item_3).title = "User"
-        goToListFragment()
+        bottomNavigationView.menu.findItem(R.id.item_1)?.isChecked = true
+
     }
 
     private fun goToListFragment() {
