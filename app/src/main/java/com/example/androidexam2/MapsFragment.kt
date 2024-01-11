@@ -124,6 +124,11 @@ class MapsFragment : Fragment(), GoogleMap.OnInfoWindowClickListener {
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
                     map.isMyLocationEnabled = true
+                    locationProvider.lastLocation.addOnSuccessListener { location ->
+                        val userLatLng = LatLng(location.latitude, location.longitude)
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, zoomLevel))
+                    }
+
                 }
             }
 

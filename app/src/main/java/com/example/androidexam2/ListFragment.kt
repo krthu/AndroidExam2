@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Firebase
@@ -45,7 +46,7 @@ class ListFragment : Fragment(), MealAdapter.onItemClickListner {
         val adapter = MealAdapter(requireContext(), meals, this)
         val recycler = view.findViewById<RecyclerView>(R.id.mealRecyclerView)
         recycler.setHasFixedSize(true)
-        recycler.layoutManager = GridLayoutManager(requireContext(), 1)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
         auth = Firebase.auth
 

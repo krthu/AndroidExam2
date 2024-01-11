@@ -221,7 +221,6 @@ class CreateMealFragment : Fragment() {
     }
 
     private fun getGPSFromUri(): DoubleArray? {
-
         imageURI?.let {
             requireContext().contentResolver.openInputStream(it).use { stream ->
                 if (stream != null) {
